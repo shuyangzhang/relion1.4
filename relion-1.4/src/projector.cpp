@@ -548,6 +548,11 @@ void Projector::rotate2D(MultidimArray<Complex > &f2d, Matrix2D<DOUBLE> &A, bool
 	Complex d00, d01, d10, d11, dx0, dx1;
 	Matrix2D<DOUBLE> Ainv;
 
+	int u0, u1, u2, u3, v0, v1, v2, v3;
+	int intXX, intYY, intZZ;
+	Complex f00, f01, f02, f03, f10, f11, f12, f13, f20, f21, f22, f23, f30, f31, f32, f33;
+	Complex fx0, fx1, fx2, fx3;
+
     // f2d should already be in the right size (ori_size,orihalfdim)
     // AND the points outside max_r should already be zero...
     // f2d.initZeros();
@@ -649,6 +654,70 @@ void Projector::rotate2D(MultidimArray<Complex > &f2d, Matrix2D<DOUBLE> &A, bool
 				else
 					DIRECT_A2D_ELEM(f2d, i, x) = A2D_ELEM(data, y0, x0);
 			} // endif NEAREST_NEIGHBOUR
+			else if (interpolator == CUBIC )
+			{
+				if (xp < 0)
+				{
+					xp = -xp;
+					yp = -yp;
+					is_neg_x = true;
+				}
+				else 
+				{
+					is_neg_x = false;
+				}
+
+				intXX = FLOOR(xp);
+				intYY = FLOOR(yp);
+
+				u1 = xp - intXX;
+				v1 = yp - intYY;
+
+				u0 = 1 + u1;
+				u2 = 1 - u1;
+				u3 = 2 - u1;
+
+				v0 = 1 + v1;
+				v2 = 1 - v1;
+				v3 = 2 - v1;
+
+				u0 = - 4 * cubic_factor + 8 * cubic_factor * u0 - 5 * cubic_factor * u0 * u0 + cubic_factor * u0 * u0 * u0;
+				u1 = 1 - (cubic_factor + 3) * u1 * u1 + (cubic_factor + 2) * u1 * u1 * u1;
+				u2 = 1 - (cubic_factor + 3) * u2 * u2 + (cubic_factor + 2) * u2 * u2 * u2;
+				u3 = - 4 * cubic_factor + 8 * cubic_factor * u3 - 5 * cubic_factor * u3 * u3 + cubic_factor * u3 * u3 * u3;
+				
+				v0 = - 4 * cubic_factor + 8 * cubic_factor * v0 - 5 * cubic_factor * v0 * v0 + cubic_factor * v0 * v0 * v0;
+				v1 = 1 - (cubic_factor + 3) * v1 * v1 + (cubic_factor + 2) * v1 * v1 * v1;
+				v2 = 1 - (cubic_factor + 3) * v2 * v2 + (cubic_factor + 2) * v2 * v2 * v2;
+				v3 = - 4 * cubic_factor + 8 * cubic_factor * v3 - 5 * cubic_factor * v3 * v3 + cubic_factor * v3 * v3 * v3;
+
+				f00 = DIRECT_A2D_ELEM(data, intYY - 1, intXX - 1);
+				f01 = DIRECT_A2D_ELEM(data, intYY - 1, intXX );
+				f02 = DIRECT_A2D_ELEM(data, intYY - 1, intXX + 1);
+				f03 = DIRECT_A2D_ELEM(data, intYY - 1, intXX + 2);
+				f10 = DIRECT_A2D_ELEM(data, intYY , intXX - 1);
+				f11 = DIRECT_A2D_ELEM(data, intYY , intXX );
+				f12 = DIRECT_A2D_ELEM(data, intYY , intXX + 1);
+				f13 = DIRECT_A2D_ELEM(data, intYY , intXX + 2);
+				f20 = DIRECT_A2D_ELEM(data, intYY + 1, intXX - 1);
+				f21 = DIRECT_A2D_ELEM(data, intYY + 1, intXX );
+				f22 = DIRECT_A2D_ELEM(data, intYY + 1, intXX + 1);
+				f23 = DIRECT_A2D_ELEM(data, intYY + 1, intXX + 2);
+				f30 = DIRECT_A2D_ELEM(data, intYY + 2, intXX - 1);
+				f31 = DIRECT_A2D_ELEM(data, intYY + 2, intXX );
+				f32 = DIRECT_A2D_ELEM(data, intYY + 2, intXX + 1);
+				f33 = DIRECT_A2D_ELEM(data, intYY + 2, intXX + 2);
+
+				fx0 = u0 * f00 + u1 * f01 + u2 * f02 + u3 * f03;
+				fx1 = u0 * f10 + u1 * f11 + u2 * f12 + u3 * f13;
+				fx2 = u0 * f20 + u1 * f21 + u2 * f22 + u3 * f23;
+				fx3 = u0 * f30 + u1 * f31 + u2 * f32 + u3 * f33;
+
+				DIRECT_A2D_ELEM(f2d, i, x) = v0 * fx0 + v1 * fx1 + v2 * fx2 + v3 * fx3;
+
+				if (is_neg_x)
+					DIRECT_A2D_ELEM(f2d, i, x) = conj(DIRECT_A2D_ELEM(f2d, i, x));
+			} // endif CUBIC
 			else
 				REPORT_ERROR("Unrecognized interpolator in Projector::project");
 		} // endif x-loop
@@ -664,6 +733,15 @@ void Projector::rotate3D(MultidimArray<Complex > &f3d, Matrix2D<DOUBLE> &A, bool
 	Complex d000, d010, d100, d110, d001, d011, d101, d111, dx00, dx10, dxy0, dx01, dx11, dxy1;
 	Matrix2D<DOUBLE> Ainv;
 
+	int u0, u1, u2, u3, v0, v1, v2, v3, w0, w1, w2, w3;
+	int intXX, intYY, intZZ;
+
+	Complex f000, f001, f002, f003, f010, f011, f012, f013, f020, f021, f022, f023, f030, f031, f032, f033,
+			f100, f101, f102, f103, f110, f111, f112, f113, f120, f121, f122, f123, f130, f131, f132, f133,
+			f200, f201, f202, f203, f210, f211, f212, f213, f220, f221, f222, f223, f230, f231, f232, f233,
+			f300, f301, f302, f303, f310, f311, f312, f313, f320, f321, f322, f323, f330, f331, f332, f333;
+	Complex fx00, fx01, fx02, fx03, fx10, fx11, fx12, fx13, fx20, fx21, fx22, fx23, fx30, fx31, fx32, fx33,
+			fxy0, fxy1, fxy2, fxy3;
     // f3d should already be in the right size (ori_size,orihalfdim)
     // AND the points outside max_r should already be zero...
     // f3d.initZeros();
@@ -805,6 +883,147 @@ void Projector::rotate3D(MultidimArray<Complex > &f3d, Matrix2D<DOUBLE> &A, bool
 						DIRECT_A3D_ELEM(f3d, k, i, x) = A3D_ELEM(data, z0, y0, x0);
 
 				} // endif NEAREST_NEIGHBOUR
+				else if (interpolator == CUBIC )
+				{
+					if (xp < 0)
+					{
+						xp = -xp;
+						yp = -yp;
+						zp = -zp;
+						is_neg_x = true;
+					}
+					else
+					{
+						is_neg_x = false;
+					}
+
+					intXX = FLOOR(xp);
+					intYY = FLOOR(yp);
+					intZZ = FLOOR(zp);
+
+					u1 = xp - intXX;
+					v1 = yp - intYY;
+					w1 = zp - intZZ;
+
+					u0 = 1 + u1;
+					u2 = 1 - u1;
+					u3 = 2 - u1;
+
+					v0 = 1 + v1;
+					v2 = 1 - v1;
+					v3 = 2 - v1;
+
+					w0 = 1 + w1;
+					w2 = 1 - w1;
+					w3 = 2 - w1;
+
+					u0 = - 4 * cubic_factor + 8 * cubic_factor * u0 - 5 * cubic_factor * u0 * u0 + cubic_factor * u0 * u0 * u0;
+					u1 = 1 - (cubic_factor + 3) * u1 * u1 + (cubic_factor + 2) * u1 * u1 * u1;
+					u2 = 1 - (cubic_factor + 3) * u2 * u2 + (cubic_factor + 2) * u2 * u2 * u2;
+					u3 = - 4 * cubic_factor + 8 * cubic_factor * u3 - 5 * cubic_factor * u3 * u3 + cubic_factor * u3 * u3 * u3;
+					
+					v0 = - 4 * cubic_factor + 8 * cubic_factor * v0 - 5 * cubic_factor * v0 * v0 + cubic_factor * v0 * v0 * v0;
+					v1 = 1 - (cubic_factor + 3) * v1 * v1 + (cubic_factor + 2) * v1 * v1 * v1;
+					v2 = 1 - (cubic_factor + 3) * v2 * v2 + (cubic_factor + 2) * v2 * v2 * v2;
+					v3 = - 4 * cubic_factor + 8 * cubic_factor * v3 - 5 * cubic_factor * v3 * v3 + cubic_factor * v3 * v3 * v3;
+
+					w0 = - 4 * cubic_factor + 8 * cubic_factor * w0 - 5 * cubic_factor * w0 * w0 + cubic_factor * w0 * w0 * w0;
+					w1 = 1 - (cubic_factor + 3) * w1 * w1 + (cubic_factor + 2) * w1 * w1 * w1;
+					w2 = 1 - (cubic_factor + 3) * w2 * w2 + (cubic_factor + 2) * w2 * w2 * w2;
+					w3 = - 4 * cubic_factor + 8 * cubic_factor * w3 - 5 * cubic_factor * w3 * w3 + cubic_factor * w3 * w3 * w3;
+
+					f000 = DIRECT_A3D_ELEM(data, intZZ - 1, intYY - 1, intXX - 1);
+					f001 = DIRECT_A3D_ELEM(data, intZZ - 1, intYY - 1, intXX );
+					f002 = DIRECT_A3D_ELEM(data, intZZ - 1, intYY - 1, intXX + 1);
+					f003 = DIRECT_A3D_ELEM(data, intZZ - 1, intYY - 1, intXX + 2);
+					f010 = DIRECT_A3D_ELEM(data, intZZ - 1, intYY , intXX - 1);
+					f011 = DIRECT_A3D_ELEM(data, intZZ - 1, intYY , intXX );
+					f012 = DIRECT_A3D_ELEM(data, intZZ - 1, intYY , intXX + 1);
+					f013 = DIRECT_A3D_ELEM(data, intZZ - 1, intYY , intXX + 2);
+					f020 = DIRECT_A3D_ELEM(data, intZZ - 1, intYY + 1, intXX - 1);
+					f021 = DIRECT_A3D_ELEM(data, intZZ - 1, intYY + 1, intXX );
+					f022 = DIRECT_A3D_ELEM(data, intZZ - 1, intYY + 1, intXX + 1);
+					f023 = DIRECT_A3D_ELEM(data, intZZ - 1, intYY + 1, intXX + 2);
+					f030 = DIRECT_A3D_ELEM(data, intZZ - 1, intYY + 2, intXX - 1);
+					f031 = DIRECT_A3D_ELEM(data, intZZ - 1, intYY + 2, intXX );
+					f032 = DIRECT_A3D_ELEM(data, intZZ - 1, intYY + 2, intXX + 1);
+					f033 = DIRECT_A3D_ELEM(data, intZZ - 1, intYY + 2, intXX + 2);
+					f100 = DIRECT_A3D_ELEM(data, intZZ , intYY - 1, intXX - 1);
+					f101 = DIRECT_A3D_ELEM(data, intZZ , intYY - 1, intXX );
+					f102 = DIRECT_A3D_ELEM(data, intZZ , intYY - 1, intXX + 1);
+					f103 = DIRECT_A3D_ELEM(data, intZZ , intYY - 1, intXX + 2);
+					f110 = DIRECT_A3D_ELEM(data, intZZ , intYY , intXX - 1);
+					f111 = DIRECT_A3D_ELEM(data, intZZ , intYY , intXX );
+					f112 = DIRECT_A3D_ELEM(data, intZZ , intYY , intXX + 1);
+					f113 = DIRECT_A3D_ELEM(data, intZZ , intYY , intXX + 2);
+					f120 = DIRECT_A3D_ELEM(data, intZZ , intYY + 1, intXX - 1);
+					f121 = DIRECT_A3D_ELEM(data, intZZ , intYY + 1, intXX );
+					f122 = DIRECT_A3D_ELEM(data, intZZ , intYY + 1, intXX + 1);
+					f123 = DIRECT_A3D_ELEM(data, intZZ , intYY + 1, intXX + 2);
+					f130 = DIRECT_A3D_ELEM(data, intZZ , intYY + 2, intXX - 1);
+					f131 = DIRECT_A3D_ELEM(data, intZZ , intYY + 2, intXX );
+					f132 = DIRECT_A3D_ELEM(data, intZZ , intYY + 2, intXX + 1);
+					f133 = DIRECT_A3D_ELEM(data, intZZ , intYY + 2, intXX + 2);
+					f200 = DIRECT_A3D_ELEM(data, intZZ + 1, intYY - 1, intXX - 1);
+					f201 = DIRECT_A3D_ELEM(data, intZZ + 1, intYY - 1, intXX );
+					f202 = DIRECT_A3D_ELEM(data, intZZ + 1, intYY - 1, intXX + 1);
+					f203 = DIRECT_A3D_ELEM(data, intZZ + 1, intYY - 1, intXX + 2);
+					f210 = DIRECT_A3D_ELEM(data, intZZ + 1, intYY , intXX - 1);
+					f211 = DIRECT_A3D_ELEM(data, intZZ + 1, intYY , intXX );
+					f212 = DIRECT_A3D_ELEM(data, intZZ + 1, intYY , intXX + 1);
+					f213 = DIRECT_A3D_ELEM(data, intZZ + 1, intYY , intXX + 2);
+					f220 = DIRECT_A3D_ELEM(data, intZZ + 1, intYY + 1, intXX - 1);
+					f221 = DIRECT_A3D_ELEM(data, intZZ + 1, intYY + 1, intXX );
+					f222 = DIRECT_A3D_ELEM(data, intZZ + 1, intYY + 1, intXX + 1);
+					f223 = DIRECT_A3D_ELEM(data, intZZ + 1, intYY + 1, intXX + 2);
+					f230 = DIRECT_A3D_ELEM(data, intZZ + 1, intYY + 2, intXX - 1);
+					f231 = DIRECT_A3D_ELEM(data, intZZ + 1, intYY + 2, intXX );
+					f232 = DIRECT_A3D_ELEM(data, intZZ + 1, intYY + 2, intXX + 1);
+					f233 = DIRECT_A3D_ELEM(data, intZZ + 1, intYY + 2, intXX + 2);
+					f300 = DIRECT_A3D_ELEM(data, intZZ + 2, intYY - 1, intXX - 1);
+					f301 = DIRECT_A3D_ELEM(data, intZZ + 2, intYY - 1, intXX );
+					f302 = DIRECT_A3D_ELEM(data, intZZ + 2, intYY - 1, intXX + 1);
+					f303 = DIRECT_A3D_ELEM(data, intZZ + 2, intYY - 1, intXX + 2);
+					f310 = DIRECT_A3D_ELEM(data, intZZ + 2, intYY , intXX - 1);
+					f311 = DIRECT_A3D_ELEM(data, intZZ + 2, intYY , intXX );
+					f312 = DIRECT_A3D_ELEM(data, intZZ + 2, intYY , intXX + 1);
+					f313 = DIRECT_A3D_ELEM(data, intZZ + 2, intYY , intXX + 2);
+					f320 = DIRECT_A3D_ELEM(data, intZZ + 2, intYY + 1, intXX - 1);
+					f321 = DIRECT_A3D_ELEM(data, intZZ + 2, intYY + 1, intXX );
+					f322 = DIRECT_A3D_ELEM(data, intZZ + 2, intYY + 1, intXX + 1);
+					f323 = DIRECT_A3D_ELEM(data, intZZ + 2, intYY + 1, intXX + 2);
+					f330 = DIRECT_A3D_ELEM(data, intZZ + 2, intYY + 2, intXX - 1);
+					f331 = DIRECT_A3D_ELEM(data, intZZ + 2, intYY + 2, intXX );
+					f332 = DIRECT_A3D_ELEM(data, intZZ + 2, intYY + 2, intXX + 1);
+					f333 = DIRECT_A3D_ELEM(data, intZZ + 2, intYY + 2, intXX + 2);
+					
+					fx00 = u0 * f000 + u1 * f001 + u2 * f002 + u3 * f003;
+					fx01 = u0 * f010 + u1 * f011 + u2 * f012 + u3 * f013;
+					fx02 = u0 * f020 + u1 * f021 + u2 * f022 + u3 * f023;
+					fx03 = u0 * f030 + u1 * f031 + u2 * f032 + u3 * f033;
+					fx10 = u0 * f100 + u1 * f101 + u2 * f102 + u3 * f103;
+					fx11 = u0 * f110 + u1 * f111 + u2 * f112 + u3 * f113;
+					fx12 = u0 * f120 + u1 * f121 + u2 * f122 + u3 * f123;
+					fx13 = u0 * f130 + u1 * f131 + u2 * f132 + u3 * f133;
+					fx20 = u0 * f200 + u1 * f201 + u2 * f202 + u3 * f203;
+					fx21 = u0 * f210 + u1 * f211 + u2 * f212 + u3 * f213;
+					fx22 = u0 * f220 + u1 * f221 + u2 * f222 + u3 * f223;
+					fx23 = u0 * f230 + u1 * f231 + u2 * f232 + u3 * f233;
+					fx30 = u0 * f300 + u1 * f301 + u2 * f302 + u3 * f303;
+					fx31 = u0 * f310 + u1 * f311 + u2 * f312 + u3 * f313;
+					fx32 = u0 * f320 + u1 * f321 + u2 * f322 + u3 * f323;
+					fx33 = u0 * f330 + u1 * f331 + u2 * f332 + u3 * f333;
+
+					fxy0 = v0 * fx00 + v1 * fx01 + v2 * fx02 + v3 * fx03;
+					fxy1 = v0 * fx10 + v1 * fx11 + v2 * fx12 + v3 * fx13;
+					fxy2 = v0 * fx20 + v1 * fx21 + v2 * fx22 + v3 * fx23;
+					fxy3 = v0 * fx30 + v1 * fx31 + v2 * fx32 + v3 * fx33;
+
+					DIRECT_A3D_ELEM(f3d, k, i, x) = w0 * fxy0 + w1 * fxy1 + w2 * fxy2 + w3 * fxy3;
+
+					if (is_neg_x)
+						DIRECT_A3D_ELEM(f3d, k, i, x) = conj(DIRECT_A3D_ELEM(f3d, k, i, x));
+				} // endif CUBIC
 				else
 					REPORT_ERROR("Unrecognized interpolator in Projector::project");
 			} // endif x-loop
