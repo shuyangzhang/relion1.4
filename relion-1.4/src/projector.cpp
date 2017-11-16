@@ -248,7 +248,7 @@ void Projector::project(MultidimArray<Complex > &f2d, Matrix2D<DOUBLE> &A, bool 
 	Complex dx00, dx01, dx10, dx11, dxy0, dxy1;
 	Matrix2D<DOUBLE> Ainv;
 
-	int u0, u1, u2, u3, v0, v1, v2, v3, w0, w1, w2, w3;
+	DOUBLE u0, u1, u2, u3, v0, v1, v2, v3, w0, w1, w2, w3;
 	int intXX, intYY, intZZ;
 	// DOUBLE dblXX, dblYY, dblZZ;
 	Complex f000, f001, f002, f003, f010, f011, f012, f013, f020, f021, f022, f023, f030, f031, f032, f033,
@@ -548,7 +548,7 @@ void Projector::rotate2D(MultidimArray<Complex > &f2d, Matrix2D<DOUBLE> &A, bool
 	Complex d00, d01, d10, d11, dx0, dx1;
 	Matrix2D<DOUBLE> Ainv;
 
-	int u0, u1, u2, u3, v0, v1, v2, v3;
+	DOUBLE u0, u1, u2, u3, v0, v1, v2, v3;
 	int intXX, intYY, intZZ;
 	Complex f00, f01, f02, f03, f10, f11, f12, f13, f20, f21, f22, f23, f30, f31, f32, f33;
 	Complex fx0, fx1, fx2, fx3;
@@ -733,7 +733,7 @@ void Projector::rotate3D(MultidimArray<Complex > &f3d, Matrix2D<DOUBLE> &A, bool
 	Complex d000, d010, d100, d110, d001, d011, d101, d111, dx00, dx10, dxy0, dx01, dx11, dxy1;
 	Matrix2D<DOUBLE> Ainv;
 
-	int u0, u1, u2, u3, v0, v1, v2, v3, w0, w1, w2, w3;
+	DOUBLE u0, u1, u2, u3, v0, v1, v2, v3, w0, w1, w2, w3;
 	int intXX, intYY, intZZ;
 
 	Complex f000, f001, f002, f003, f010, f011, f012, f013, f020, f021, f022, f023, f030, f031, f032, f033,
