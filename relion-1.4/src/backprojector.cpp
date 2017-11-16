@@ -491,6 +491,10 @@ void BackProjector::backrotate2D(const MultidimArray<Complex > &f2d,
 	Matrix2D<DOUBLE> Ainv;
 	DOUBLE my_weight = 1.;
 
+	int intXX, intYY;
+	DOUBLE u0, u1, u2, u3, v0, v1, v2, v3;
+	DOUBLE df00, df01, df02, df03, df10, df11, df12, df13, df20, df21, df22, df23, df30, df31, df32, df33;
+
 	// f2d should already be in the right size (ori_size,orihalfdim)
     // AND the points outside max_r should already be zero...
 
@@ -625,6 +629,96 @@ void BackProjector::backrotate2D(const MultidimArray<Complex > &f2d,
 				} // endif NEAREST_NEIGHBOUR
 				else if (interpolator == CUBIC )
 				{
+					if (xp < 0)
+					{
+						xp = -xp;
+						yp = -yp;
+						is_neg_x = true;
+					}
+					else
+					{
+						is_neg_x = false;
+					}
+
+					intXX = FLOOR(xp);
+					intYY = FLOOR(yp);
+
+					u1 = xp - intXX;
+					v1 = yp - intYY;
+
+					u0 = 1 + u1;
+					u2 = 1 - u1;
+					u3 = 2 - u1;
+
+					v0 = 1 + v1;
+					v2 = 1 - v1;
+					v3 = 2 - v1;
+
+					u0 = - 4 * cubic_factor + 8 * cubic_factor * u0 - 5 * cubic_factor * u0 * u0 + cubic_factor * u0 * u0 * u0;
+					u1 = 1 - (cubic_factor + 3) * u1 * u1 + (cubic_factor + 2) * u1 * u1 * u1;
+					u2 = 1 - (cubic_factor + 3) * u2 * u2 + (cubic_factor + 2) * u2 * u2 * u2;
+					u3 = - 4 * cubic_factor + 8 * cubic_factor * u3 - 5 * cubic_factor * u3 * u3 + cubic_factor * u3 * u3 * u3;
+					
+					v0 = - 4 * cubic_factor + 8 * cubic_factor * v0 - 5 * cubic_factor * v0 * v0 + cubic_factor * v0 * v0 * v0;
+					v1 = 1 - (cubic_factor + 3) * v1 * v1 + (cubic_factor + 2) * v1 * v1 * v1;
+					v2 = 1 - (cubic_factor + 3) * v2 * v2 + (cubic_factor + 2) * v2 * v2 * v2;
+					v3 = - 4 * cubic_factor + 8 * cubic_factor * v3 - 5 * cubic_factor * v3 * v3 + cubic_factor * v3 * v3 * v3;
+
+					df00 = u1 * u2 * u3 * v1 * v2 * v3;
+					df01 = u0 * u2 * u3 * v1 * v2 * v3;
+					df02 = u1 * u0 * u3 * v1 * v2 * v3;
+					df03 = u1 * u2 * u0 * v1 * v2 * v3;
+					df10 = u1 * u2 * u3 * v0 * v2 * v3;
+					df11 = u0 * u2 * u3 * v0 * v2 * v3;
+					df12 = u1 * u0 * u3 * v0 * v2 * v3;
+					df13 = u1 * u2 * u0 * v0 * v2 * v3;
+					df20 = u1 * u2 * u3 * v1 * v0 * v3;
+					df21 = u0 * u2 * u3 * v1 * v0 * v3;
+					df22 = u1 * u0 * u3 * v1 * v0 * v3;
+					df23 = u1 * u2 * u0 * v1 * v0 * v3;
+					df30 = u1 * u2 * u3 * v1 * v2 * v0;
+					df31 = u0 * u2 * u3 * v1 * v2 * v0;
+					df32 = u1 * u0 * u3 * v1 * v2 * v0;
+					df33 = u1 * u2 * u0 * v1 * v2 * v0;
+
+					if (is_neg_x)
+						my_val = conj(my_val);
+
+					// Store slice in 3D weighted sum
+					DIRECT_A2D_ELEM(data, intYY - 1, intXX - 1) += df00 * my_val;
+					DIRECT_A2D_ELEM(data, intYY - 1, intXX ) += df01 * my_val;
+					DIRECT_A2D_ELEM(data, intYY - 1, intXX + 1) += df02 * my_val;
+					DIRECT_A2D_ELEM(data, intYY - 1, intXX + 2) += df03 * my_val;
+					DIRECT_A2D_ELEM(data, intYY , intXX - 1) += df10 * my_val;
+					DIRECT_A2D_ELEM(data, intYY , intXX ) += df11 * my_val;
+					DIRECT_A2D_ELEM(data, intYY , intXX + 1) += df12 * my_val;
+					DIRECT_A2D_ELEM(data, intYY , intXX + 2) += df13 * my_val;
+					DIRECT_A2D_ELEM(data, intYY + 1, intXX - 1) += df20 * my_val;
+					DIRECT_A2D_ELEM(data, intYY + 1, intXX ) += df21 * my_val;
+					DIRECT_A2D_ELEM(data, intYY + 1, intXX + 1) += df22 * my_val;
+					DIRECT_A2D_ELEM(data, intYY + 1, intXX + 2) += df23 * my_val;
+					DIRECT_A2D_ELEM(data, intYY + 2, intXX - 1) += df30 * my_val;
+					DIRECT_A2D_ELEM(data, intYY + 2, intXX ) += df31 * my_val;
+					DIRECT_A2D_ELEM(data, intYY + 2, intXX + 1) += df32 * my_val;
+					DIRECT_A2D_ELEM(data, intYY + 2, intXX + 2) += df33 * my_val;
+
+					// Store corresponding weights
+					DIRECT_A2D_ELEM(weight, intYY - 1, intXX - 1) += df00 * my_weight;
+					DIRECT_A2D_ELEM(weight, intYY - 1, intXX ) += df01 * my_weight;
+					DIRECT_A2D_ELEM(weight, intYY - 1, intXX + 1) += df02 * my_weight;
+					DIRECT_A2D_ELEM(weight, intYY - 1, intXX + 2) += df03 * my_weight;
+					DIRECT_A2D_ELEM(weight, intYY , intXX - 1) += df10 * my_weight;
+					DIRECT_A2D_ELEM(weight, intYY , intXX ) += df11 * my_weight;
+					DIRECT_A2D_ELEM(weight, intYY , intXX + 1) += df12 * my_weight;
+					DIRECT_A2D_ELEM(weight, intYY , intXX + 2) += df13 * my_weight;
+					DIRECT_A2D_ELEM(weight, intYY + 1, intXX - 1) += df20 * my_weight;
+					DIRECT_A2D_ELEM(weight, intYY + 1, intXX ) += df21 * my_weight;
+					DIRECT_A2D_ELEM(weight, intYY + 1, intXX + 1) += df22 * my_weight;
+					DIRECT_A2D_ELEM(weight, intYY + 1, intXX + 2) += df23 * my_weight;
+					DIRECT_A2D_ELEM(weight, intYY + 2, intXX - 1) += df30 * my_weight;
+					DIRECT_A2D_ELEM(weight, intYY + 2, intXX ) += df31 * my_weight;
+					DIRECT_A2D_ELEM(weight, intYY + 2, intXX + 1) += df32 * my_weight;
+					DIRECT_A2D_ELEM(weight, intYY + 2, intXX + 2) += df33 * my_weight;
 
 				} // endif CUBIC
 				else
@@ -647,6 +741,13 @@ void BackProjector::backrotate3D(const MultidimArray<Complex > &f3d,
 	Complex my_val;
 	Matrix2D<DOUBLE> Ainv;
 	DOUBLE my_weight = 1.;
+
+	int intXX, intYY, intZZ;
+	DOUBLE u0, u1, u2, u3, v0, v1, v2, v3, w0, w1, w2, w3;
+	DOUBLE df000, df001, df002, df003, df010, df011, df012, df013, df020, df021, df022, df023, df030, df031, df032, df033,
+		   df100, df101, df102, df103, df110, df111, df112, df113, df120, df121, df122, df123, df130, df131, df132, df133,
+		   df200, df201, df202, df203, df210, df211, df212, df213, df220, df221, df222, df223, df230, df231, df232, df233,
+		   df300, df301, df302, df303, df310, df311, df312, df313, df320, df321, df322, df323, df330, df331, df332, df333;
 
 	// f3d should already be in the right size (ori_size,orihalfdim)
     // AND the points outside max_r should already be zero...
@@ -821,6 +922,252 @@ void BackProjector::backrotate3D(const MultidimArray<Complex > &f3d,
 					} // endif NEAREST_NEIGHBOUR
 					else if (interpolator == CUBIC )
 					{
+						if (xp <0)
+						{
+							xp = -xp;
+							yp = -yp;
+							zp = -zp;
+							is_neg_x = true;
+						}
+						else
+						{
+							is_neg_x = false;
+						}
+
+						intXX = FLOOR(xp);
+						intYY = FLOOR(yp);
+						intZZ = FLOOR(zp);
+
+						u1 = xp - intXX;
+						v1 = yp - intYY;
+						w1 = zp - intZZ;
+
+						u0 = 1 + u1;
+						u2 = 1 - u1;
+						u3 = 2 - u1;
+
+						v0 = 1 + v1;
+						v2 = 1 - v1;
+						v3 = 2 - v1;
+
+						w0 = 1 + w1;
+						w2 = 1 - w1;
+						w3 = 2 - w1;
+
+						u0 = - 4 * cubic_factor + 8 * cubic_factor * u0 - 5 * cubic_factor * u0 * u0 + cubic_factor * u0 * u0 * u0;
+						u1 = 1 - (cubic_factor + 3) * u1 * u1 + (cubic_factor + 2) * u1 * u1 * u1;
+						u2 = 1 - (cubic_factor + 3) * u2 * u2 + (cubic_factor + 2) * u2 * u2 * u2;
+						u3 = - 4 * cubic_factor + 8 * cubic_factor * u3 - 5 * cubic_factor * u3 * u3 + cubic_factor * u3 * u3 * u3;
+						
+						v0 = - 4 * cubic_factor + 8 * cubic_factor * v0 - 5 * cubic_factor * v0 * v0 + cubic_factor * v0 * v0 * v0;
+						v1 = 1 - (cubic_factor + 3) * v1 * v1 + (cubic_factor + 2) * v1 * v1 * v1;
+						v2 = 1 - (cubic_factor + 3) * v2 * v2 + (cubic_factor + 2) * v2 * v2 * v2;
+						v3 = - 4 * cubic_factor + 8 * cubic_factor * v3 - 5 * cubic_factor * v3 * v3 + cubic_factor * v3 * v3 * v3;
+
+						w0 = - 4 * cubic_factor + 8 * cubic_factor * w0 - 5 * cubic_factor * w0 * w0 + cubic_factor * w0 * w0 * w0;
+						w1 = 1 - (cubic_factor + 3) * w1 * w1 + (cubic_factor + 2) * w1 * w1 * w1;
+						w2 = 1 - (cubic_factor + 3) * w2 * w2 + (cubic_factor + 2) * w2 * w2 * w2;
+						w3 = - 4 * cubic_factor + 8 * cubic_factor * w3 - 5 * cubic_factor * w3 * w3 + cubic_factor * w3 * w3 * w3;
+
+						df000 = u1 * u2 * u3 * v1 * v2 * v3 * w1 * w2 * w3;
+						df001 = u0 * u2 * u3 * v1 * v2 * v3 * w1 * w2 * w3;
+						df002 = u1 * u0 * u3 * v1 * v2 * v3 * w1 * w2 * w3;
+						df003 = u1 * u2 * u0 * v1 * v2 * v3 * w1 * w2 * w3;
+						df010 = u1 * u2 * u3 * v0 * v2 * v3 * w1 * w2 * w3;
+						df011 = u0 * u2 * u3 * v0 * v2 * v3 * w1 * w2 * w3;
+						df012 = u1 * u0 * u3 * v0 * v2 * v3 * w1 * w2 * w3;
+						df013 = u1 * u2 * u0 * v0 * v2 * v3 * w1 * w2 * w3;
+						df020 = u1 * u2 * u3 * v1 * v0 * v3 * w1 * w2 * w3;
+						df021 = u0 * u2 * u3 * v1 * v0 * v3 * w1 * w2 * w3;
+						df022 = u1 * u0 * u3 * v1 * v0 * v3 * w1 * w2 * w3;
+						df023 = u1 * u2 * u0 * v1 * v0 * v3 * w1 * w2 * w3;
+						df030 = u1 * u2 * u3 * v1 * v2 * v0 * w1 * w2 * w3;
+						df031 = u0 * u2 * u3 * v1 * v2 * v0 * w1 * w2 * w3;
+						df032 = u1 * u0 * u3 * v1 * v2 * v0 * w1 * w2 * w3;
+						df033 = u1 * u2 * u0 * v1 * v2 * v0 * w1 * w2 * w3;
+						df100 = u1 * u2 * u3 * v1 * v2 * v3 * w0 * w2 * w3;
+						df101 = u0 * u2 * u3 * v1 * v2 * v3 * w0 * w2 * w3;
+						df102 = u1 * u0 * u3 * v1 * v2 * v3 * w0 * w2 * w3;
+						df103 = u1 * u2 * u0 * v1 * v2 * v3 * w0 * w2 * w3;
+						df110 = u1 * u2 * u3 * v0 * v2 * v3 * w0 * w2 * w3;
+						df111 = u0 * u2 * u3 * v0 * v2 * v3 * w0 * w2 * w3;
+						df112 = u1 * u0 * u3 * v0 * v2 * v3 * w0 * w2 * w3;
+						df113 = u1 * u2 * u0 * v0 * v2 * v3 * w0 * w2 * w3;
+						df120 = u1 * u2 * u3 * v1 * v0 * v3 * w0 * w2 * w3;
+						df121 = u0 * u2 * u3 * v1 * v0 * v3 * w0 * w2 * w3;
+						df122 = u1 * u0 * u3 * v1 * v0 * v3 * w0 * w2 * w3;
+						df123 = u1 * u2 * u0 * v1 * v0 * v3 * w0 * w2 * w3;
+						df130 = u1 * u2 * u3 * v1 * v2 * v0 * w0 * w2 * w3;
+						df131 = u0 * u2 * u3 * v1 * v2 * v0 * w0 * w2 * w3;
+						df132 = u1 * u0 * u3 * v1 * v2 * v0 * w0 * w2 * w3;
+						df133 = u1 * u2 * u0 * v1 * v2 * v0 * w0 * w2 * w3;
+						df200 = u1 * u2 * u3 * v1 * v2 * v3 * w1 * w0 * w3;
+						df201 = u0 * u2 * u3 * v1 * v2 * v3 * w1 * w0 * w3;
+						df202 = u1 * u0 * u3 * v1 * v2 * v3 * w1 * w0 * w3;
+						df203 = u1 * u2 * u0 * v1 * v2 * v3 * w1 * w0 * w3;
+						df210 = u1 * u2 * u3 * v0 * v2 * v3 * w1 * w0 * w3;
+						df211 = u0 * u2 * u3 * v0 * v2 * v3 * w1 * w0 * w3;
+						df212 = u1 * u0 * u3 * v0 * v2 * v3 * w1 * w0 * w3;
+						df213 = u1 * u2 * u0 * v0 * v2 * v3 * w1 * w0 * w3;
+						df220 = u1 * u2 * u3 * v1 * v0 * v3 * w1 * w0 * w3;
+						df221 = u0 * u2 * u3 * v1 * v0 * v3 * w1 * w0 * w3;
+						df222 = u1 * u0 * u3 * v1 * v0 * v3 * w1 * w0 * w3;
+						df223 = u1 * u2 * u0 * v1 * v0 * v3 * w1 * w0 * w3;
+						df230 = u1 * u2 * u3 * v1 * v2 * v0 * w1 * w0 * w3;
+						df231 = u0 * u2 * u3 * v1 * v2 * v0 * w1 * w0 * w3;
+						df232 = u1 * u0 * u3 * v1 * v2 * v0 * w1 * w0 * w3;
+						df233 = u1 * u2 * u0 * v1 * v2 * v0 * w1 * w0 * w3;
+						df300 = u1 * u2 * u3 * v1 * v2 * v3 * w1 * w2 * w0;
+						df301 = u0 * u2 * u3 * v1 * v2 * v3 * w1 * w2 * w0;
+						df302 = u1 * u0 * u3 * v1 * v2 * v3 * w1 * w2 * w0;
+						df303 = u1 * u2 * u0 * v1 * v2 * v3 * w1 * w2 * w0;
+						df310 = u1 * u2 * u3 * v0 * v2 * v3 * w1 * w2 * w0;
+						df311 = u0 * u2 * u3 * v0 * v2 * v3 * w1 * w2 * w0;
+						df312 = u1 * u0 * u3 * v0 * v2 * v3 * w1 * w2 * w0;
+						df313 = u1 * u2 * u0 * v0 * v2 * v3 * w1 * w2 * w0;
+						df320 = u1 * u2 * u3 * v1 * v0 * v3 * w1 * w2 * w0;
+						df321 = u0 * u2 * u3 * v1 * v0 * v3 * w1 * w2 * w0;
+						df322 = u1 * u0 * u3 * v1 * v0 * v3 * w1 * w2 * w0;
+						df323 = u1 * u2 * u0 * v1 * v0 * v3 * w1 * w2 * w0;
+						df330 = u1 * u2 * u3 * v1 * v2 * v0 * w1 * w2 * w0;
+						df331 = u0 * u2 * u3 * v1 * v2 * v0 * w1 * w2 * w0;
+						df332 = u1 * u0 * u3 * v1 * v2 * v0 * w1 * w2 * w0;
+						df333 = u1 * u2 * u0 * v1 * v2 * v0 * w1 * w2 * w0;
+						
+						if (is_neg_x)
+							my_val = conj(my_val);
+
+						// Store slice in 3D weighted sum
+						DIRECT_A3D_ELEM(data, intZZ - 1, intYY - 1, intXX - 1) += df000 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ - 1, intYY - 1, intXX ) += df001 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ - 1, intYY - 1, intXX + 1) += df002 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ - 1, intYY - 1, intXX + 2) += df003 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ - 1, intYY , intXX - 1) += df010 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ - 1, intYY , intXX ) += df011 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ - 1, intYY , intXX + 1) += df012 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ - 1, intYY , intXX + 2) += df013 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ - 1, intYY + 1, intXX - 1) += df020 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ - 1, intYY + 1, intXX ) += df021 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ - 1, intYY + 1, intXX + 1) += df022 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ - 1, intYY + 1, intXX + 2) += df023 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ - 1, intYY + 2, intXX - 1) += df030 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ - 1, intYY + 2, intXX ) += df031 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ - 1, intYY + 2, intXX + 1) += df032 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ - 1, intYY + 2, intXX + 2) += df033 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ , intYY - 1, intXX - 1) += df100 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ , intYY - 1, intXX ) += df101 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ , intYY - 1, intXX + 1) += df102 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ , intYY - 1, intXX + 2) += df103 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ , intYY , intXX - 1) += df110 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ , intYY , intXX ) += df111 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ , intYY , intXX + 1) += df112 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ , intYY , intXX + 2) += df113 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ , intYY + 1, intXX - 1) += df120 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ , intYY + 1, intXX ) += df121 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ , intYY + 1, intXX + 1) += df122 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ , intYY + 1, intXX + 2) += df123 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ , intYY + 2, intXX - 1) += df130 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ , intYY + 2, intXX ) += df131 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ , intYY + 2, intXX + 1) += df132 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ , intYY + 2, intXX + 2) += df133 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ + 1, intYY - 1, intXX - 1) += df200 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ + 1, intYY - 1, intXX ) += df201 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ + 1, intYY - 1, intXX + 1) += df202 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ + 1, intYY - 1, intXX + 2) += df203 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ + 1, intYY , intXX - 1) += df210 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ + 1, intYY , intXX ) += df211 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ + 1, intYY , intXX + 1) += df212 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ + 1, intYY , intXX + 2) += df213 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ + 1, intYY + 1, intXX - 1) += df220 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ + 1, intYY + 1, intXX ) += df221 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ + 1, intYY + 1, intXX + 1) += df222 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ + 1, intYY + 1, intXX + 2) += df223 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ + 1, intYY + 2, intXX - 1) += df230 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ + 1, intYY + 2, intXX ) += df231 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ + 1, intYY + 2, intXX + 1) += df232 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ + 1, intYY + 2, intXX + 2) += df233 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ + 2, intYY - 1, intXX - 1) += df300 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ + 2, intYY - 1, intXX ) += df301 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ + 2, intYY - 1, intXX + 1) += df302 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ + 2, intYY - 1, intXX + 2) += df303 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ + 2, intYY , intXX - 1) += df310 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ + 2, intYY , intXX ) += df311 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ + 2, intYY , intXX + 1) += df312 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ + 2, intYY , intXX + 2) += df313 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ + 2, intYY + 1, intXX - 1) += df320 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ + 2, intYY + 1, intXX ) += df321 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ + 2, intYY + 1, intXX + 1) += df322 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ + 2, intYY + 1, intXX + 2) += df323 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ + 2, intYY + 2, intXX - 1) += df330 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ + 2, intYY + 2, intXX ) += df331 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ + 2, intYY + 2, intXX + 1) += df332 * my_val;
+						DIRECT_A3D_ELEM(data, intZZ + 2, intYY + 2, intXX + 2) += df333 * my_val;
+
+						// Store corresponding weights
+						DIRECT_A3D_ELEM(weight, intZZ - 1, intYY - 1, intXX - 1) += df000 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ - 1, intYY - 1, intXX ) += df001 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ - 1, intYY - 1, intXX + 1) += df002 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ - 1, intYY - 1, intXX + 2) += df003 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ - 1, intYY , intXX - 1) += df010 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ - 1, intYY , intXX ) += df011 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ - 1, intYY , intXX + 1) += df012 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ - 1, intYY , intXX + 2) += df013 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ - 1, intYY + 1, intXX - 1) += df020 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ - 1, intYY + 1, intXX ) += df021 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ - 1, intYY + 1, intXX + 1) += df022 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ - 1, intYY + 1, intXX + 2) += df023 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ - 1, intYY + 2, intXX - 1) += df030 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ - 1, intYY + 2, intXX ) += df031 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ - 1, intYY + 2, intXX + 1) += df032 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ - 1, intYY + 2, intXX + 2) += df033 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ , intYY - 1, intXX - 1) += df100 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ , intYY - 1, intXX ) += df101 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ , intYY - 1, intXX + 1) += df102 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ , intYY - 1, intXX + 2) += df103 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ , intYY , intXX - 1) += df110 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ , intYY , intXX ) += df111 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ , intYY , intXX + 1) += df112 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ , intYY , intXX + 2) += df113 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ , intYY + 1, intXX - 1) += df120 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ , intYY + 1, intXX ) += df121 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ , intYY + 1, intXX + 1) += df122 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ , intYY + 1, intXX + 2) += df123 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ , intYY + 2, intXX - 1) += df130 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ , intYY + 2, intXX ) += df131 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ , intYY + 2, intXX + 1) += df132 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ , intYY + 2, intXX + 2) += df133 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ + 1, intYY - 1, intXX - 1) += df200 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ + 1, intYY - 1, intXX ) += df201 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ + 1, intYY - 1, intXX + 1) += df202 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ + 1, intYY - 1, intXX + 2) += df203 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ + 1, intYY , intXX - 1) += df210 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ + 1, intYY , intXX ) += df211 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ + 1, intYY , intXX + 1) += df212 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ + 1, intYY , intXX + 2) += df213 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ + 1, intYY + 1, intXX - 1) += df220 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ + 1, intYY + 1, intXX ) += df221 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ + 1, intYY + 1, intXX + 1) += df222 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ + 1, intYY + 1, intXX + 2) += df223 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ + 1, intYY + 2, intXX - 1) += df230 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ + 1, intYY + 2, intXX ) += df231 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ + 1, intYY + 2, intXX + 1) += df232 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ + 1, intYY + 2, intXX + 2) += df233 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ + 2, intYY - 1, intXX - 1) += df300 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ + 2, intYY - 1, intXX ) += df301 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ + 2, intYY - 1, intXX + 1) += df302 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ + 2, intYY - 1, intXX + 2) += df303 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ + 2, intYY , intXX - 1) += df310 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ + 2, intYY , intXX ) += df311 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ + 2, intYY , intXX + 1) += df312 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ + 2, intYY , intXX + 2) += df313 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ + 2, intYY + 1, intXX - 1) += df320 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ + 2, intYY + 1, intXX ) += df321 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ + 2, intYY + 1, intXX + 1) += df322 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ + 2, intYY + 1, intXX + 2) += df323 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ + 2, intYY + 2, intXX - 1) += df330 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ + 2, intYY + 2, intXX ) += df331 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ + 2, intYY + 2, intXX + 1) += df332 * my_weight;
+						DIRECT_A3D_ELEM(weight, intZZ + 2, intYY + 2, intXX + 2) += df333 * my_weight;
 
 					} // endif CUBIC
 					else
