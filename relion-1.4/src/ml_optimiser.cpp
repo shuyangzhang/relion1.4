@@ -381,6 +381,7 @@ void MlOptimiser::parseInitial(int argc, char **argv)
 	int expert_section = parser.addSection("Expert options");
 	mymodel.padding_factor = textToInteger(parser.getOption("--pad", "Oversampling factor for the Fourier transforms of the references", "2"));
 	mymodel.interpolator = (parser.checkOption("--NN", "Perform nearest-neighbour instead of linear Fourier-space interpolation?")) ? NEAREST_NEIGHBOUR : TRILINEAR;
+	mymodel.interpolator = (parser.checkOption("--CUBIC", "Perform cubic instead of linear Fourier-space interpolation?")) ? CUBIC : TRILINEAR;
 	mymodel.r_min_nn = textToInteger(parser.getOption("--r_min_nn", "Minimum number of Fourier shells to perform linear Fourier-space interpolation", "10"));
 	verb = textToInteger(parser.getOption("--verb", "Verbosity (1=normal, 0=silent)", "1"));
 	random_seed = textToInteger(parser.getOption("--random_seed", "Number for the random seed generator", "-1"));
