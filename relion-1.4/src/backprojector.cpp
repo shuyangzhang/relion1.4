@@ -61,6 +61,8 @@ void BackProjector::backproject(const MultidimArray<Complex > &f2d,
 		   df200, df201, df202, df203, df210, df211, df212, df213, df220, df221, df222, df223, df230, df231, df232, df233,
 		   df300, df301, df302, df303, df310, df311, df312, df313, df320, df321, df322, df323, df330, df331, df332, df333;
 
+	// cubic_factor set -0.5 for test
+	DOUBLE cubic_factor = -0.5;
 
 	// f2d should already be in the right size (ori_size,orihalfdim)
     // AND the points outside max_r should already be zero...
@@ -495,6 +497,9 @@ void BackProjector::backrotate2D(const MultidimArray<Complex > &f2d,
 	DOUBLE u0, u1, u2, u3, v0, v1, v2, v3;
 	DOUBLE df00, df01, df02, df03, df10, df11, df12, df13, df20, df21, df22, df23, df30, df31, df32, df33;
 
+	// cubic_factor set -0.5 for test
+	DOUBLE cubic_factor = -0.5;
+
 	// f2d should already be in the right size (ori_size,orihalfdim)
     // AND the points outside max_r should already be zero...
 
@@ -748,6 +753,9 @@ void BackProjector::backrotate3D(const MultidimArray<Complex > &f3d,
 		   df100, df101, df102, df103, df110, df111, df112, df113, df120, df121, df122, df123, df130, df131, df132, df133,
 		   df200, df201, df202, df203, df210, df211, df212, df213, df220, df221, df222, df223, df230, df231, df232, df233,
 		   df300, df301, df302, df303, df310, df311, df312, df313, df320, df321, df322, df323, df330, df331, df332, df333;
+
+	// cubic_factor set -0.5 for test
+	DOUBLE cubic_factor = -0.5;
 
 	// f3d should already be in the right size (ori_size,orihalfdim)
     // AND the points outside max_r should already be zero...

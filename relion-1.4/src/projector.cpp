@@ -257,6 +257,8 @@ void Projector::project(MultidimArray<Complex > &f2d, Matrix2D<DOUBLE> &A, bool 
 			f300, f301, f302, f303, f310, f311, f312, f313, f320, f321, f322, f323, f330, f331, f332, f333;
 	Complex fx00, fx01, fx02, fx03, fx10, fx11, fx12, fx13, fx20, fx21, fx22, fx23, fx30, fx31, fx32, fx33,
 			fxy0, fxy1, fxy2, fxy3;
+	// cubic_factor set -0.5 for test
+	DOUBLE cubic_factor = -0.5;
 	
 
     // f2d should already be in the right size (ori_size,orihalfdim)
@@ -553,6 +555,9 @@ void Projector::rotate2D(MultidimArray<Complex > &f2d, Matrix2D<DOUBLE> &A, bool
 	Complex f00, f01, f02, f03, f10, f11, f12, f13, f20, f21, f22, f23, f30, f31, f32, f33;
 	Complex fx0, fx1, fx2, fx3;
 
+	// cubic_factor set -0.5 for test
+	DOUBLE cubic_factor = -0.5;
+
     // f2d should already be in the right size (ori_size,orihalfdim)
     // AND the points outside max_r should already be zero...
     // f2d.initZeros();
@@ -742,6 +747,10 @@ void Projector::rotate3D(MultidimArray<Complex > &f3d, Matrix2D<DOUBLE> &A, bool
 			f300, f301, f302, f303, f310, f311, f312, f313, f320, f321, f322, f323, f330, f331, f332, f333;
 	Complex fx00, fx01, fx02, fx03, fx10, fx11, fx12, fx13, fx20, fx21, fx22, fx23, fx30, fx31, fx32, fx33,
 			fxy0, fxy1, fxy2, fxy3;
+
+	// cubic_factor set -0.5 for test
+	DOUBLE cubic_factor = -0.5;
+
     // f3d should already be in the right size (ori_size,orihalfdim)
     // AND the points outside max_r should already be zero...
     // f3d.initZeros();
