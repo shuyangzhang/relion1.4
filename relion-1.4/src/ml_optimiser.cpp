@@ -1784,7 +1784,7 @@ void MlOptimiser::expectationSomeParticles(long int my_first_ori_particle, long 
 	timer.tic(TIMING_ESP);
 #endif
 
-//#define DEBUG_EXPSOME
+#define DEBUG_EXPSOME
 #ifdef DEBUG_EXPSOME
 	std::cerr << "Entering expectationSomeParticles..." << std::endl;
 #endif
