@@ -1943,9 +1943,9 @@ void MlOptimiser::expectationOneParticle(long int my_ori_particle, int thread_id
 	std::cerr << "Entering MlOptimiser::expectationOneParticle" << std::endl;
     std::cerr << " my_ori_particle= " << my_ori_particle << std::endl;
     std::cerr << " exp_iclass_min= " << exp_iclass_min << " exp_iclass_max= " << exp_iclass_max << std::endl;
-    std::cerr << " exp_idir_min= " << exp_idir_min << " exp_idir_max= " << exp_idir_max << std::endl;
-    std::cerr << " exp_ipsi_min= " << exp_ipsi_min << " exp_ipsi_max= " << exp_ipsi_max << std::endl;
-    std::cerr << " exp_itrans_min= " << exp_itrans_min << " exp_itrans_max= " << exp_itrans_max << std::endl;
+    // std::cerr << " exp_idir_min= " << exp_idir_min << " exp_idir_max= " << exp_idir_max << std::endl;
+    // std::cerr << " exp_ipsi_min= " << exp_ipsi_min << " exp_ipsi_max= " << exp_ipsi_max << std::endl;
+    // std::cerr << " exp_itrans_min= " << exp_itrans_min << " exp_itrans_max= " << exp_itrans_max << std::endl;
     if (thread_id==0)
 	{
 		char c;
