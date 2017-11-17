@@ -1937,7 +1937,7 @@ void MlOptimiser::expectationOneParticle(long int my_ori_particle, int thread_id
     }
 
 // This debug is a good one to step through the separate steps of the expectation to see where trouble lies....
-//#define DEBUG_ESP_MEM
+#define DEBUG_ESP_MEM
 #ifdef DEBUG_ESP_MEM
 
 	std::cerr << "Entering MlOptimiser::expectationOneParticle" << std::endl;
