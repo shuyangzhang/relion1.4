@@ -1455,7 +1455,7 @@ void MlOptimiser::iterate()
 void MlOptimiser::expectation()
 {
 
-//#define DEBUG_EXP
+#define DEBUG_EXP
 #ifdef DEBUG_EXP
 	std::cerr << "Entering expectation" << std::endl;
 #endif
