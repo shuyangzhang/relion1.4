@@ -1863,7 +1863,7 @@ void MlOptimiser::doThreadExpectationSomeParticles(int thread_id)
 	size_t first_ipart = 0, last_ipart = 0;
 	while (exp_ipart_ThreadTaskDistributor->getTasks(first_ipart, last_ipart))
 	{
-//#define DEBUG_EXPSOMETHR
+#define DEBUG_EXPSOMETHR
 #ifdef DEBUG_EXPSOMETHR
 		pthread_mutex_lock(&global_mutex);
 		std::cerr << " thread_id= " << thread_id << " first_ipart= " << first_ipart << " last_ipart= " << last_ipart << std::endl;
