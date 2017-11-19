@@ -346,7 +346,7 @@ void BackProjector::backproject(const MultidimArray<Complex > &f2d,
 						my_val = conj(my_val);
 
 					std::cerr << " Before changing the matrix data " << std::endl;
-					std::cerr << " Origin data matrix is " << data << std::endl;
+					// std::cerr << " Origin data matrix is " << data << std::endl;
 
 					// Store slice in 3D weighted sum
 					DIRECT_A3D_ELEM(data, intZZ - 1, intYY - 1, intXX - 1) += df000 * my_val;
@@ -415,7 +415,7 @@ void BackProjector::backproject(const MultidimArray<Complex > &f2d,
 					DIRECT_A3D_ELEM(data, intZZ + 2, intYY + 2, intXX + 2) += df333 * my_val;
 
 					std::cerr << " After changing the data matrix " << std::endl;
-					std::cerr << " The new data matrix is " << data << std::endl;
+					// std::cerr << " The new data matrix is " << data << std::endl;
 
 					std::cerr << " Before changing the weight " << std::endl;
 					std::cerr << " The origin weight matrix is " << weight << std::endl;
