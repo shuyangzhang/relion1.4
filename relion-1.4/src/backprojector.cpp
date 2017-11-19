@@ -224,6 +224,8 @@ void BackProjector::backproject(const MultidimArray<Complex > &f2d,
 				} // endif NEAREST_NEIGHBOUR
 				else if (interpolator == CUBIC )
 				{
+					std::cerr << " Entering cubic interpolation " << std::endl;
+
 					if (xp <0)
 					{
 						xp = -xp;
@@ -270,6 +272,8 @@ void BackProjector::backproject(const MultidimArray<Complex > &f2d,
 					w1 = 1 - (cubic_factor + 3) * w1 * w1 + (cubic_factor + 2) * w1 * w1 * w1;
 					w2 = 1 - (cubic_factor + 3) * w2 * w2 + (cubic_factor + 2) * w2 * w2 * w2;
 					w3 = - 4 * cubic_factor + 8 * cubic_factor * w3 - 5 * cubic_factor * w3 * w3 + cubic_factor * w3 * w3 * w3;
+
+					std::cerr << " intXX to w3 value equal to " << intXX, intYY, intZZ, u0, u1, u2, u3, v0, v1, v2, v3, w0, w1, w2, w3 << std::endl;
 
 					df000 = u1 * u2 * u3 * v1 * v2 * v3 * w1 * w2 * w3;
 					df001 = u0 * u2 * u3 * v1 * v2 * v3 * w1 * w2 * w3;
