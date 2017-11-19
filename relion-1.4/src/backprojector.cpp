@@ -224,7 +224,7 @@ void BackProjector::backproject(const MultidimArray<Complex > &f2d,
 				} // endif NEAREST_NEIGHBOUR
 				else if (interpolator == CUBIC )
 				{
-					std::cerr << " Entering cubic interpolation " << std::endl;
+					// std::cerr << " Entering cubic interpolation " << std::endl;
 
 					if (xp <0)
 					{
@@ -345,7 +345,7 @@ void BackProjector::backproject(const MultidimArray<Complex > &f2d,
 					if (is_neg_x)
 						my_val = conj(my_val);
 
-					std::cerr << " Before changing the matrix data " << std::endl;
+					// std::cerr << " Before changing the matrix data " << std::endl;
 					// std::cerr << " Origin data matrix is " << data << std::endl;
 
 					// Store slice in 3D weighted sum
@@ -414,10 +414,10 @@ void BackProjector::backproject(const MultidimArray<Complex > &f2d,
 					DIRECT_A3D_ELEM(data, intZZ + 2, intYY + 2, intXX + 1) += df332 * my_val;
 					DIRECT_A3D_ELEM(data, intZZ + 2, intYY + 2, intXX + 2) += df333 * my_val;
 
-					std::cerr << " After changing the data matrix " << std::endl;
+					// std::cerr << " After changing the data matrix " << std::endl;
 					// std::cerr << " The new data matrix is " << data << std::endl;
 
-					std::cerr << " Before changing the weight " << std::endl;
+					// std::cerr << " Before changing the weight " << std::endl;
 					// std::cerr << " The origin weight matrix is " << weight << std::endl;
 
 					// Store corresponding weights
@@ -486,7 +486,7 @@ void BackProjector::backproject(const MultidimArray<Complex > &f2d,
 					DIRECT_A3D_ELEM(weight, intZZ + 2, intYY + 2, intXX + 1) += df332 * my_weight;
 					DIRECT_A3D_ELEM(weight, intZZ + 2, intYY + 2, intXX + 2) += df333 * my_weight;
 
-					std::cerr << " After changing the weight matrix " << std::endl;
+					// std::cerr << " After changing the weight matrix " << std::endl;
 					// std::cerr << " The new weight matrix is " << weight << std::endl;
 
 				} // endif CUBIC
