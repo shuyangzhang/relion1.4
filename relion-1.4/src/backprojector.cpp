@@ -89,6 +89,7 @@ void BackProjector::backproject(const MultidimArray<Complex > &f2d,
     std::cerr << " STARTINGZ(data)= "<< STARTINGZ(data) << std::endl;
     std::cerr << " max_r= "<< r_max << std::endl;
     std::cerr << " Ainv= " << Ainv << std::endl;
+	std::cerr << " Interpolator= " << interpolator << std::endl;
 #endif
 
     for (int i=0; i < YSIZE(f2d); i++)
