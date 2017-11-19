@@ -78,7 +78,7 @@ void BackProjector::backproject(const MultidimArray<Complex > &f2d,
     int max_r2 = r_max * r_max;
     int min_r2_nn = r_min_nn * r_min_nn;
 
-//#define DEBUG_BACKP
+#define DEBUG_BACKP
 #ifdef DEBUG_BACKP
     std::cerr << " XSIZE(f2d)= "<< XSIZE(f2d) << std::endl;
     std::cerr << " YSIZE(f2d)= "<< YSIZE(f2d) << std::endl;
