@@ -285,6 +285,7 @@ void Projector::project(MultidimArray<Complex > &f2d, Matrix2D<DOUBLE> &A, bool 
     std::cerr << " YSIZE(f2d)= "<< YSIZE(f2d) << std::endl;
     std::cerr << " XSIZE(data)= "<< XSIZE(data) << std::endl;
     std::cerr << " YSIZE(data)= "<< YSIZE(data) << std::endl;
+	std::cerr << " ZSIZE(data)= "<< ZSIZE(data) << std::endl;
     std::cerr << " STARTINGX(data)= "<< STARTINGX(data) << std::endl;
     std::cerr << " STARTINGY(data)= "<< STARTINGY(data) << std::endl;
     std::cerr << " STARTINGZ(data)= "<< STARTINGZ(data) << std::endl;
@@ -515,7 +516,16 @@ void Projector::project(MultidimArray<Complex > &f2d, Matrix2D<DOUBLE> &A, bool 
 				f331 = DIRECT_A3D_ELEM(data, intZZ + 2, intYY + 2, intXX );
 				f332 = DIRECT_A3D_ELEM(data, intZZ + 2, intYY + 2, intXX + 1);
 				f333 = DIRECT_A3D_ELEM(data, intZZ + 2, intYY + 2, intXX + 2);
-				
+
+#ifdef DEBUG
+	std::cerr << " 64 points for tricubic interpolation is done! "<< std::endl;
+    std::cerr << " f000= "<< f000.real << " + " << f000.imag << " i " << std::endl;
+	std::cerr << " f111= "<< f000.real << " + " << f000.imag << " i " << std::endl;
+	std::cerr << " f222= "<< f000.real << " + " << f000.imag << " i " << std::endl;
+	std::cerr << " f333= "<< f000.real << " + " << f000.imag << " i " << std::endl;
+
+#endif
+
 				fx00 = u0 * f000 + u1 * f001 + u2 * f002 + u3 * f003;
 				fx01 = u0 * f010 + u1 * f011 + u2 * f012 + u3 * f013;
 				fx02 = u0 * f020 + u1 * f021 + u2 * f022 + u3 * f023;
