@@ -525,7 +525,6 @@ void Projector::project(MultidimArray<Complex > &f2d, Matrix2D<DOUBLE> &A, bool 
 	std::cerr << " f111= "<< f000.real << " + " << f000.imag << " i " << std::endl;
 	std::cerr << " f222= "<< f000.real << " + " << f000.imag << " i " << std::endl;
 	std::cerr << " f333= "<< f000.real << " + " << f000.imag << " i " << std::endl;
-
 #endif
 
 				fx00 = u0 * f000 + u1 * f001 + u2 * f002 + u3 * f003;
@@ -545,10 +544,34 @@ void Projector::project(MultidimArray<Complex > &f2d, Matrix2D<DOUBLE> &A, bool 
 				fx32 = u0 * f320 + u1 * f321 + u2 * f322 + u3 * f323;
 				fx33 = u0 * f330 + u1 * f331 + u2 * f332 + u3 * f333;
 
+#ifdef DEBUG
+	std::cerr << " x axis cubic interpolation is done! "<< std::endl;
+    std::cerr << " fx00= "<< f000.real << " + " << f000.imag << " i " << std::endl;
+	std::cerr << " fx01= "<< f000.real << " + " << f000.imag << " i " << std::endl;
+	std::cerr << " fx02= "<< f000.real << " + " << f000.imag << " i " << std::endl;
+	std::cerr << " fx03= "<< f000.real << " + " << f000.imag << " i " << std::endl;
+	std::cerr << " u0= "<< u0 << std::endl;
+    std::cerr << " u1= "<< u1 << std::endl;
+    std::cerr << " u2= "<< u2 << std::endl;
+    std::cerr << " u3= "<< u3 << std::endl;
+#endif
+
 				fxy0 = v0 * fx00 + v1 * fx01 + v2 * fx02 + v3 * fx03;
 				fxy1 = v0 * fx10 + v1 * fx11 + v2 * fx12 + v3 * fx13;
 				fxy2 = v0 * fx20 + v1 * fx21 + v2 * fx22 + v3 * fx23;
 				fxy3 = v0 * fx30 + v1 * fx31 + v2 * fx32 + v3 * fx33;
+
+#ifdef DEBUG
+	std::cerr << " y axis cubic interpolation is done! "<< std::endl;
+    std::cerr << " fxy0= "<< f000.real << " + " << f000.imag << " i " << std::endl;
+	std::cerr << " fxy1= "<< f000.real << " + " << f000.imag << " i " << std::endl;
+	std::cerr << " fxy2= "<< f000.real << " + " << f000.imag << " i " << std::endl;
+	std::cerr << " fxy3= "<< f000.real << " + " << f000.imag << " i " << std::endl;
+	std::cerr << " v0= "<< v0 << std::endl;
+    std::cerr << " v1= "<< v1 << std::endl;
+    std::cerr << " v2= "<< v2 << std::endl;
+    std::cerr << " v3= "<< v3 << std::endl;
+#endif
 
 				DIRECT_A2D_ELEM(f2d, i, x) = w0 * fxy0 + w1 * fxy1 + w2 * fxy2 + w3 * fxy3;
 
