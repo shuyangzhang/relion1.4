@@ -405,13 +405,15 @@ void Projector::project(MultidimArray<Complex > &f2d, Matrix2D<DOUBLE> &A, bool 
 
 				intXX = FLOOR(xp);
 				intYY = FLOOR(yp);
-				intYY -=  STARTINGY(data);
 				intZZ = FLOOR(zp);
-				intZZ -=  STARTINGZ(data);
 
 				u1 = xp - intXX;
 				v1 = yp - intYY;
 				w1 = zp - intZZ;
+
+				// doing this because the index of y and z axis is not correct!
+				intYY -=  STARTINGY(data);
+				intZZ -=  STARTINGZ(data);
 
 				u0 = 1 + u1;
 				u2 = 1 - u1;
