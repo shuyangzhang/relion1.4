@@ -197,13 +197,13 @@ public:
                 Euler_rotation3DMatrix(rot, tilt, psi, A3D);
                 
                 // this line is for debug the cubic interpolation
-                std::cerr << "Now rotation3Dmatrix is done! \nThen starting the projection! " << std::endl;
+                // std::cerr << "Now rotation3Dmatrix is done! \nThen starting the projection! " << std::endl;
 
                 F2D.initZeros();
                 projector.get2DFourierTransform(F2D, A3D, IS_NOT_INV);
 
                 // this line is for testing whether the projection step is ok
-                std::cerr << "Now the projection step is done! " << std::endl;
+                // std::cerr << "Now the projection step is done! " << std::endl;
 
                 if (ABS(xoff) > 0.001 || ABS(yoff) > 0.001)
                 {
