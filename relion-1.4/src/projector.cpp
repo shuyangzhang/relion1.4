@@ -405,7 +405,9 @@ void Projector::project(MultidimArray<Complex > &f2d, Matrix2D<DOUBLE> &A, bool 
 
 				intXX = FLOOR(xp);
 				intYY = FLOOR(yp);
+				intYY -=  STARTINGY(data);
 				intZZ = FLOOR(zp);
+				intZZ -=  STARTINGY(data);
 
 				u1 = xp - intXX;
 				v1 = yp - intYY;
