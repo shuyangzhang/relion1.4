@@ -246,6 +246,9 @@ void BackProjector::backproject(const MultidimArray<Complex > &f2d,
 					v1 = yp - intYY;
 					w1 = zp - intZZ;
 
+					intYY -=  STARTINGY(data);
+					intZZ -=  STARTINGZ(data);
+
 					u0 = 1 + u1;
 					u2 = 1 - u1;
 					u3 = 2 - u1;
@@ -672,6 +675,8 @@ void BackProjector::backrotate2D(const MultidimArray<Complex > &f2d,
 					u1 = xp - intXX;
 					v1 = yp - intYY;
 
+					intYY -=  STARTINGY(data);
+
 					u0 = 1 + u1;
 					u2 = 1 - u1;
 					u3 = 2 - u1;
@@ -970,6 +975,9 @@ void BackProjector::backrotate3D(const MultidimArray<Complex > &f3d,
 						u1 = xp - intXX;
 						v1 = yp - intYY;
 						w1 = zp - intZZ;
+
+						intYY -=  STARTINGY(data);
+						intZZ -=  STARTINGZ(data);
 
 						u0 = 1 + u1;
 						u2 = 1 - u1;

@@ -729,6 +729,8 @@ void Projector::rotate2D(MultidimArray<Complex > &f2d, Matrix2D<DOUBLE> &A, bool
 				u1 = xp - intXX;
 				v1 = yp - intYY;
 
+				intYY -=  STARTINGY(data);
+
 				u0 = 1 + u1;
 				u2 = 1 - u1;
 				u3 = 2 - u1;
@@ -964,6 +966,9 @@ void Projector::rotate3D(MultidimArray<Complex > &f3d, Matrix2D<DOUBLE> &A, bool
 					u1 = xp - intXX;
 					v1 = yp - intYY;
 					w1 = zp - intZZ;
+
+					intYY -=  STARTINGY(data);
+					intZZ -=  STARTINGZ(data);
 
 					u0 = 1 + u1;
 					u2 = 1 - u1;
