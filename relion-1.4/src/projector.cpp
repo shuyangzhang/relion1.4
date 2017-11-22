@@ -279,7 +279,7 @@ void Projector::project(MultidimArray<Complex > &f2d, Matrix2D<DOUBLE> &A, bool 
     int max_r2 = my_r_max * my_r_max;
     int min_r2_nn = r_min_nn * r_min_nn;
 
-//#define DEBUG
+#define DEBUG
 #ifdef DEBUG
     std::cerr << " XSIZE(f2d)= "<< XSIZE(f2d) << std::endl;
     std::cerr << " YSIZE(f2d)= "<< YSIZE(f2d) << std::endl;
@@ -436,6 +436,20 @@ void Projector::project(MultidimArray<Complex > &f2d, Matrix2D<DOUBLE> &A, bool 
 				w1 = 1 - (cubic_factor + 3) * w1 * w1 + (cubic_factor + 2) * w1 * w1 * w1;
 				w2 = 1 - (cubic_factor + 3) * w2 * w2 + (cubic_factor + 2) * w2 * w2 * w2;
 				w3 = - 4 * cubic_factor + 8 * cubic_factor * w3 - 5 * cubic_factor * w3 * w3 + cubic_factor * w3 * w3 * w3;
+
+#ifdef DEBUG
+	std::cerr << " entering a new turn "<< std::endl;
+    std::cerr << " i= "<< i << std::endl;
+    std::cerr << " x= "<< x << std::endl;
+    std::cerr << " xp= "<< xp << std::endl;
+    std::cerr << " yp= "<< yp << std::endl;
+    std::cerr << " zp= "<< zp << std::endl;
+    std::cerr << " intXX= "<< intXX << std::endl;
+    std::cerr << " intYY= "<< intYY << std::endl;
+    std::cerr << " intZZ= "<< intZZ << std::endl;
+//    std::cerr << " Ainv= " << Ainv << std::endl;
+#endif
+
 
 				f000 = DIRECT_A3D_ELEM(data, intZZ - 1, intYY - 1, intXX - 1);
 				f001 = DIRECT_A3D_ELEM(data, intZZ - 1, intYY - 1, intXX );
