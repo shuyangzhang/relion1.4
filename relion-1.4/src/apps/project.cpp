@@ -82,7 +82,9 @@ public:
     	do_ctf2 = parser.checkOption("--ctf2", "Apply CTF*CTF to reference projections");
        	if (parser.checkOption("--NN", "Use nearest-neighbour instead of linear interpolation"))
        		interpolator = NEAREST_NEIGHBOUR;
-       	else
+       	else if (parser.checkOption("--CUBIC", "Use cubic instead of linear interpolation"))
+            interpolator = CUBIC;
+        else
        		interpolator = TRILINEAR;
 
        	// Hidden
