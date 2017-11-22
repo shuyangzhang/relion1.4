@@ -279,7 +279,7 @@ void Projector::project(MultidimArray<Complex > &f2d, Matrix2D<DOUBLE> &A, bool 
     int max_r2 = my_r_max * my_r_max;
     int min_r2_nn = r_min_nn * r_min_nn;
 
-#define DEBUG
+//define DEBUG
 #ifdef DEBUG
     std::cerr << " XSIZE(f2d)= "<< XSIZE(f2d) << std::endl;
     std::cerr << " YSIZE(f2d)= "<< YSIZE(f2d) << std::endl;
