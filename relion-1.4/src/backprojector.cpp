@@ -1512,6 +1512,14 @@ void BackProjector::reconstruct(MultidimArray<DOUBLE> &vol_out,
 		}
 	}
 
+#define DEBUG_ZSY
+#ifdef DEBUG_ZSY
+	FOR_ALL_DIRECT_ELEMENTS_IN_ARRAY1D(sigma2)
+	{
+	std::cerr << " i= " << i << " sigma2= " << DIRECT_A1D_ELEM(sigma2, i) << std::endl;
+	}
+#endif	
+
 	// Average (inverse of) sigma2 in reconstruction
 	FOR_ALL_DIRECT_ELEMENTS_IN_ARRAY1D(sigma2)
 	{
