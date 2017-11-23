@@ -74,6 +74,8 @@ class reconstruct_parameters
        	fn_sub = parser.getOption("--subtract","Subtract projections of this map from the images used for reconstruction", "");
         if (parser.checkOption("--NN", "Use nearest-neighbour instead of linear interpolation before gridding correction"))
        		interpolator = NEAREST_NEIGHBOUR;
+		else if (parser.checkOption("--CUBIC", "Use cubic instead of linear interpolation"))
+            interpolator = CUBIC;
        	else
        		interpolator = TRILINEAR;
         blob_radius   = textToFloat(parser.getOption("--blob_r", "Radius of blob for gridding interpolation", "1.9"));
