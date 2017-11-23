@@ -1527,6 +1527,12 @@ void BackProjector::reconstruct(MultidimArray<DOUBLE> &vol_out,
 			DIRECT_A1D_ELEM(sigma2, i) = DIRECT_A1D_ELEM(counter, i) / DIRECT_A1D_ELEM(sigma2, i);
 		else if (DIRECT_A1D_ELEM(sigma2, i) == 0)
 			DIRECT_A1D_ELEM(sigma2, i) = 0.;
+
+#ifdef DEBUG_ZSY
+		else if (DIRECT_A1D_ELEM(sigma2, i) < 0)
+			DIRECT_A1D_ELEM(sigma2, i) = - DIRECT_A1D_ELEM(sigma2, i);
+#endif
+
 		else
 		{
 			std::cerr << " DIRECT_A1D_ELEM(sigma2, i)= " << DIRECT_A1D_ELEM(sigma2, i) << std::endl;
