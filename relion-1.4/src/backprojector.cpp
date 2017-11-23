@@ -1498,6 +1498,13 @@ void BackProjector::reconstruct(MultidimArray<DOUBLE> &vol_out,
 		int r2 = kp * kp + ip * ip + jp * jp;
 		if (r2 < max_r2)
 		{
+
+#define DEBUG_ZSY
+#ifdef DEBUG_ZSY
+	std::cerr << " kp= " << kp << " ip= " << ip << " jp= " << jp << std::endl;
+	std::cerr << " padding_factor= " << padding_factor << " Fweight= " << DIRECT_A3D_ELEM(Fweight, k, i, j) << std::endl;
+#endif
+
 			int ires = ROUND( sqrt((DOUBLE)r2) / padding_factor );
 			DOUBLE invw = oversampling_correction * DIRECT_A3D_ELEM(Fweight, k, i, j);
 			DIRECT_A1D_ELEM(sigma2, ires) += invw;
