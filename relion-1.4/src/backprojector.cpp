@@ -276,6 +276,21 @@ void BackProjector::backproject(const MultidimArray<Complex > &f2d,
 					w2 = 1 - (cubic_factor + 3) * w2 * w2 + (cubic_factor + 2) * w2 * w2 * w2;
 					w3 = - 4 * cubic_factor + 8 * cubic_factor * w3 - 5 * cubic_factor * w3 * w3 + cubic_factor * w3 * w3 * w3;
 
+#ifdef DEBUG_BACKP
+    std::cerr << " u0= "<< u0 << std::endl;
+    std::cerr << " u1= "<< u1 << std::endl;
+    std::cerr << " u2= "<< u2 << std::endl;
+    std::cerr << " u3= "<< u3 << std::endl;
+	std::cerr << " v0= "<< v0 << std::endl;
+    std::cerr << " v1= "<< v1 << std::endl;
+    std::cerr << " v2= "<< v2 << std::endl;
+    std::cerr << " v3= "<< v3 << std::endl;
+	std::cerr << " w0= "<< w0 << std::endl;
+    std::cerr << " w1= "<< w1 << std::endl;
+    std::cerr << " w2= "<< w2 << std::endl;
+    std::cerr << " w3= "<< w3 << std::endl;
+#endif
+
 					// std::cerr << " intXX to w3 value equal to " << intXX << std::endl << intYY << std::endl << intZZ << std::endl;
 					// std::cerr << u0 << " " << u1 << " " << u2 << " " << u3 << " " << v0 << " " << v1 << " " << v2 << " " << v3 << 
 					//			" " << w0 << " " << w1 << " " << w2 << " " << w3 << std::endl;
