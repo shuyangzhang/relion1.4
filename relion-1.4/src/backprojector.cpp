@@ -359,7 +359,26 @@ void BackProjector::backproject(const MultidimArray<Complex > &f2d,
 					df331 = u0 * u2 * u3 * v1 * v2 * v0 * w1 * w2 * w0;
 					df332 = u1 * u0 * u3 * v1 * v2 * v0 * w1 * w2 * w0;
 					df333 = u1 * u2 * u0 * v1 * v2 * v0 * w1 * w2 * w0;
-					
+
+#ifdef DEBUG_BACKP
+    std::cerr << " df000= "<< df000 << std::endl;
+    std::cerr << " df001= "<< df001 << std::endl;
+    std::cerr << " df002= "<< df002 << std::endl;
+    std::cerr << " df003= "<< df003 << std::endl;
+	std::cerr << " df010= "<< df010 << std::endl;
+    std::cerr << " df011= "<< df011 << std::endl;
+    std::cerr << " df012= "<< df012 << std::endl;
+    std::cerr << " df013= "<< df013 << std::endl;
+	std::cerr << " df020= "<< df020 << std::endl;
+    std::cerr << " df021= "<< df021 << std::endl;
+    std::cerr << " df022= "<< df022 << std::endl;
+    std::cerr << " df023= "<< df023 << std::endl;
+	std::cerr << " df030= "<< df030 << std::endl;
+    std::cerr << " df031= "<< df031 << std::endl;
+    std::cerr << " df032= "<< df032 << std::endl;
+    std::cerr << " df033= "<< df033 << std::endl;
+#endif
+
 					if (is_neg_x)
 						my_val = conj(my_val);
 
