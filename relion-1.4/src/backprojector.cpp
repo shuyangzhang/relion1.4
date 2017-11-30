@@ -62,7 +62,7 @@ void BackProjector::backproject(const MultidimArray<Complex > &f2d,
 		   df300, df301, df302, df303, df310, df311, df312, df313, df320, df321, df322, df323, df330, df331, df332, df333;
 
 	// cubic_factor set -0.5 for test
-	DOUBLE cubic_factor = -0.5;
+	DOUBLE cubic_factor = -1.;
 
 	// f2d should already be in the right size (ori_size,orihalfdim)
     // AND the points outside max_r should already be zero...
