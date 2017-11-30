@@ -459,7 +459,7 @@ void BackProjector::backproject(const MultidimArray<Complex > &f2d,
 
 					// Store corresponding weights
 
-#ifdef DEBUG_BACKP  // test for what will happen if weight use NN interpolator
+#ifdef DEBUG_BACKP_NN  // test for what will happen if weight use NN interpolator
 					x0 = ROUND(xp);
 					y0 = ROUND(yp);
 					z0 = ROUND(zp);
@@ -467,7 +467,7 @@ void BackProjector::backproject(const MultidimArray<Complex > &f2d,
 #endif
 
 
-#ifdef DEBUG_ZSY_WEIGHT
+// #ifdef DEBUG_ZSY_WEIGHT
 					DIRECT_A3D_ELEM(weight, intZZ - 1, intYY - 1, intXX - 1) += df000 * my_weight;
 					DIRECT_A3D_ELEM(weight, intZZ - 1, intYY - 1, intXX ) += df001 * my_weight;
 					DIRECT_A3D_ELEM(weight, intZZ - 1, intYY - 1, intXX + 1) += df002 * my_weight;
@@ -532,7 +532,7 @@ void BackProjector::backproject(const MultidimArray<Complex > &f2d,
 					DIRECT_A3D_ELEM(weight, intZZ + 2, intYY + 2, intXX ) += df331 * my_weight;
 					DIRECT_A3D_ELEM(weight, intZZ + 2, intYY + 2, intXX + 1) += df332 * my_weight;
 					DIRECT_A3D_ELEM(weight, intZZ + 2, intYY + 2, intXX + 2) += df333 * my_weight;
-#endif
+// #endif
 					// std::cerr << " After changing the weight matrix " << std::endl;
 					// std::cerr << " The new weight matrix is " << weight << std::endl;
 
@@ -1557,6 +1557,7 @@ void BackProjector::reconstruct(MultidimArray<DOUBLE> &vol_out,
 	}
 
 #define DEBUG_ZSY
+#define DEBUG_ZSY_WEIGHT     // for the weight which is negative 
 #ifdef DEBUG_ZSY
 	FOR_ALL_DIRECT_ELEMENTS_IN_ARRAY1D(sigma2)
 	{

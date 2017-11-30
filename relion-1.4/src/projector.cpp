@@ -216,7 +216,11 @@ void Projector::griddingCorrect(MultidimArray<DOUBLE> &vol_in)
 				
 				// cubic_factor set -0.5 for test
 				DOUBLE cubic_factor = -0.5;
-				
+				DOUBLE sincd2 = sin(PI * rval * 0.5) / (PI * rval * 0.5);
+				DOUBLE sinc3d2 = sin(PI * rval * 1.5) / (PI * rval * 1.5);
+				DOUBLE ft_of_kernel = 0.25 * sincd2 * sincd2 * sinc + 3 * sinc * sinc * sinc * sinc - 2.25 * sinc * sinc3d2 * sinc3d2;
+
+#ifdef DEBUG_OTHER_CUBIC			//  this region of code might be wrong, so annotate first 	
 				DOUBLE sinc_square = sin(PI * PI * rval * rval) / (PI * PI * rval * rval);
 				DOUBLE sinc_1square2 = sin(PI * PI * rval * rval * 1/2 * 1/2) / (PI * PI * rval * rval * 1/2 * 1/2);
 				DOUBLE sinc_3square2 = sin(PI * PI * rval * rval * 3/2 * 3/2) / (PI * PI * rval * rval * 3/2 * 3/2);
@@ -226,6 +230,8 @@ void Projector::griddingCorrect(MultidimArray<DOUBLE> &vol_in)
 									  + 3 * cubic_factor * sinc_square / (PI * PI * rval * rval)
 									  + 3 * cubic_factor * sinc_square * (1 - 2 * PI * PI * rval * rval * sinc_square) / (PI * PI * rval * rval)
 									  - cubic_factor * sinc * (1 - 9/2 * PI * PI * rval * rval * sinc_3square2) / (PI * PI * rval * rval);
+#endif
+
 				A3D_ELEM(vol_in, k, i, j) /= ft_of_kernel;
 			}
 			else
