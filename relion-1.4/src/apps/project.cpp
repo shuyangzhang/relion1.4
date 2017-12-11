@@ -303,7 +303,7 @@ public:
 
                 //print the power spectrum of image has been rotated 
                 MultidimArray<DOUBLE> spectrum_for_compare;
-                transformer.getSpectrum(img(), spectrum_for_compare);
+                getSpectrum(img(), spectrum_for_compare);
                 std::cout << " the spectrum is " << spectrum_for_compare << std::endl;
 
 
