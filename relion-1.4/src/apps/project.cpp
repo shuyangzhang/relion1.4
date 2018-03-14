@@ -305,6 +305,10 @@ public:
                 // Shift the image back to the center...
                 CenterFFT(img(), false);
 
+                // do gridding correct after inverse fourier transform
+                projector.griddingCorrect(img() );
+
+
                 //print the power spectrum of image has been rotated when the image back to the center
                 MultidimArray<DOUBLE> spectrum_for_compare;
                 getSpectrum(img(), spectrum_for_compare);
