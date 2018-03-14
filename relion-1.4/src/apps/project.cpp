@@ -302,20 +302,19 @@ public:
                 transformer.inverseFourierTransform();
 
 
-
-
-                // do gridding correct after inverse fourier transform
-                projector.griddingCorrect(img() );
-
-
                 //print the power spectrum of image has been rotated when the image back to the center
-                MultidimArray<DOUBLE> spectrum_for_compare;
-                getSpectrum(img(), spectrum_for_compare);
-                std::cout << " the spectrum is " << spectrum_for_compare << std::endl;
+                //MultidimArray<DOUBLE> spectrum_for_compare;
+                //getSpectrum(img(), spectrum_for_compare);
+                //std::cout << " the spectrum is " << spectrum_for_compare << std::endl;
 
                 // Shift the image back to the center...
                 CenterFFT(img(), false);
 
+                MultidimArray<DOUBLE> dummy2;
+                Projector projector2((int)XSIZE(img()), interpolator, padding_factor, r_min_nn, data_dim);
+                projector2.computeFourierTransformMap(img(), dummy2, 2* r_max, 1, false);                
+
+                std::cout << " the spectrum is " << dummy2 << std::endl;
 
                 // Subtract the projection from the corresponding experimental image
                 if (do_subtract_exp)
