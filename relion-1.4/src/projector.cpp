@@ -177,6 +177,9 @@ void Projector::computeFourierTransformMap(MultidimArray<DOUBLE> &vol_in, Multid
 
 void Projector::griddingCorrect(MultidimArray<DOUBLE> &vol_in)
 {
+
+#define DEBUG_GRID_TYPE
+
 	// Correct real-space map by dividing it by the Fourier transform of the interpolator(s)
 	vol_in.setXmippOrigin();
 	FOR_ALL_ELEMENTS_IN_ARRAY3D(vol_in)
@@ -193,14 +196,29 @@ void Projector::griddingCorrect(MultidimArray<DOUBLE> &vol_in)
 			{
 				// NN interpolation is convolution with a rectangular pulse, which FT is a sinc function
             	A3D_ELEM(vol_in, k, i, j) /= sinc;
+
+#ifdef DEBUG_GRID_TYPE
+    std::cerr << "Now using NN interpolator to do gridding correct " << std::endl;
+#endif
+
 			}
 			else if (interpolator==TRILINEAR || (interpolator==NEAREST_NEIGHBOUR && r_min_nn > 0) )
 			{
 				// trilinear interpolation is convolution with a triangular pulse, which FT is a sinc^2 function
 				A3D_ELEM(vol_in, k, i, j) /= sinc * sinc;
+
+#ifdef DEBUG_GRID_TYPE
+    std::cerr << "Now using linear interpolator to do gridding correct " << std::endl;
+#endif
+
 			}
 			else if (interpolator==CUBIC)
 			{
+
+#ifdef DEBUG_GRID_TYPE
+    std::cerr << "Now using cubic interpolator to do gridding correct " << std::endl;
+#endif
+
 				// tricubic interpolation is convolution with a kernel as follow:
 				// W(x) = (a + 2) * |x|^3 - (a - 3) * |x|^2 + 1, for |x| <= 1;
 				//      = a * |x|^3 - 5a * |x|^2 + 8a * |x| - 4a, for 1 < |x| < 2; 
@@ -837,6 +855,9 @@ void Projector::rotate3D(MultidimArray<Complex > &f3d, Matrix2D<DOUBLE> &A, bool
     std::cerr << " max_r= "<< r_max << std::endl;
     std::cerr << " Ainv= " << Ainv << std::endl;
 #endif
+
+#define DEBUG_INTER_TYPE
+
 	for (int k=0; k < ZSIZE(f3d); k++)
 	{
 		// Don't search beyond square with side max_r
@@ -881,6 +902,11 @@ void Projector::rotate3D(MultidimArray<Complex > &f3d, Matrix2D<DOUBLE> &A, bool
 
 				if (interpolator == TRILINEAR || r2 < min_r2_nn)
 				{
+
+#ifdef DEBUG_INTER_TYPE
+    std::cerr << "Now using linear interpolator to rotate3D " << std::endl;
+#endif
+
 					// Only asymmetric half is stored
 					if (xp < 0)
 					{
@@ -941,6 +967,11 @@ void Projector::rotate3D(MultidimArray<Complex > &f3d, Matrix2D<DOUBLE> &A, bool
 				} // endif TRILINEAR
 				else if (interpolator == NEAREST_NEIGHBOUR )
 				{
+
+#ifdef DEBUG_INTER_TYPE
+    std::cerr << "Now using NN interpolator to rotate3D " << std::endl;
+#endif
+
 					x0 = ROUND(xp);
 					y0 = ROUND(yp);
 					z0 = ROUND(zp);
@@ -953,6 +984,11 @@ void Projector::rotate3D(MultidimArray<Complex > &f3d, Matrix2D<DOUBLE> &A, bool
 				} // endif NEAREST_NEIGHBOUR
 				else if (interpolator == CUBIC )
 				{
+
+#ifdef DEBUG_INTER_TYPE
+    std::cerr << "Now using cubic interpolator to rotate3D " << std::endl;
+#endif
+
 					if (xp < 0)
 					{
 						xp = -xp;
