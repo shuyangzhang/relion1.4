@@ -312,7 +312,7 @@ public:
 
                 MultidimArray<DOUBLE> dummy2;
                 Projector projector2((int)XSIZE(img()), interpolator, padding_factor, r_min_nn, data_dim);
-                projector2.computeFourierTransformMap(img(), dummy2, 2* r_max, 1, false);                
+                projector2.computeFourierTransformMap(img(), dummy2, 2* r_max, 1, true);                
 
                 std::cout << " the spectrum is " << dummy2 << std::endl;
 
