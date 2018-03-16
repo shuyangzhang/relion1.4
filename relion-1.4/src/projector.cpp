@@ -178,7 +178,7 @@ void Projector::computeFourierTransformMap(MultidimArray<DOUBLE> &vol_in, Multid
 void Projector::griddingCorrect(MultidimArray<DOUBLE> &vol_in)
 {
 
-#define DEBUG_GRID_TYPE
+// #define DEBUG_GRID_TYPE
 
 	// Correct real-space map by dividing it by the Fourier transform of the interpolator(s)
 	vol_in.setXmippOrigin();
@@ -856,7 +856,7 @@ void Projector::rotate3D(MultidimArray<Complex > &f3d, Matrix2D<DOUBLE> &A, bool
     std::cerr << " Ainv= " << Ainv << std::endl;
 #endif
 
-#define DEBUG_INTER_TYPE
+// #define DEBUG_INTER_TYPE
 
 	for (int k=0; k < ZSIZE(f3d); k++)
 	{
