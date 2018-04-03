@@ -310,12 +310,13 @@ public:
                 // Shift the image back to the center...
                 CenterFFT(img(), false);
 
+#ifdef PRINT_SPECTRUM
                 MultidimArray<DOUBLE> dummy2;
                 Projector projector2((int)XSIZE(img()), interpolator, padding_factor, r_min_nn, data_dim);
                 projector2.computeFourierTransformMap(img(), dummy2, 2* r_max, 1, false);                
 
                 std::cout << " the spectrum is " << dummy2 << std::endl;
-
+#endif 
                 // Subtract the projection from the corresponding experimental image
                 if (do_subtract_exp)
                 {
