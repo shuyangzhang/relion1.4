@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
     catch (RelionError XE)
     {
         cpf.usage();
-        std::out << XE;
+        std::cout << XE;
         exit(1);
     }
 
