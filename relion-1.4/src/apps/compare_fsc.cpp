@@ -29,6 +29,7 @@ public:
     {
         parser.setCommandLine(argc, argv);
 
+        int general_section = parser.addSection("Options");
         fn_map1 = parser.getOption("--map1", "The first input map to calculate FSC");
         fn_map2 = parser.getOption("--map2", "The second input map to calculate FSC");
         fn_out = parser.getOption("--o", "Output FSC XML file name");
