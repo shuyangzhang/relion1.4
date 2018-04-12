@@ -237,7 +237,7 @@ extern std::string floatToString(float F, int _width, int _prec);
 /** This function verity if the k,i,j is out of index
  * if k < 0 or k > ZSIZE(v) or i < 0 or i > YSIZE(v) or j < 0 or j > XSIZE(v), then return 0, else DIRECT_A3D_ELEM(v,k,i,j)
  */
-#define DIRECT_A3D_ELEM_CUBIC(v,k,i,j) ( (k < 0 || i < 0 || j < 0 || k > ZSIZE(v) || i > YSIZE(v) || j > XSIZE(v)) ? Complex(0,0) : DIRECT_A3D_ELEM(v,k,i,j) )
+#define DIRECT_A3D_ELEM_CUBIC(v,k,i,j) ( (k < 0 || i < 0 || j < 0 || k >= ZSIZE(v) || i >= YSIZE(v) || j >= XSIZE(v)) ? Complex(0,0) : DIRECT_A3D_ELEM(v,k,i,j) )
 
 /** A short alias for the previous function.
  *
