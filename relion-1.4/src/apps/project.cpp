@@ -45,6 +45,9 @@ public:
 	IOParser parser;
 	MlModel model;
 
+    // alpha for cubic interpolation
+    DOUBLE cubic_alpha;
+
 
 	void usage()
 	{
@@ -89,6 +92,9 @@ public:
 
        	// Hidden
        	r_min_nn = textToInteger(getParameter(argc, argv, "--r_min_nn", "10"));
+
+        // get alpha value from argv
+        cubic_alpha = textToFloat(getParameter(argc, argv, "--cubic_alpha", "-0.5"));
 
        	// Check for errors in the command-line option
     	if (parser.checkForErrors())
@@ -136,7 +142,7 @@ public:
     	// Set up the projector
     	int data_dim = (do_3d_rot) ? 3 : 2;
     	Projector projector((int)XSIZE(vol()), interpolator, padding_factor, r_min_nn, data_dim);
-    	projector.computeFourierTransformMap(vol(), dummy, 2* r_max);
+    	projector.computeFourierTransformMap(vol(), dummy, 2* r_max, 1, true, cubic_alpha);
 
     	if (do_only_one)
     	{
@@ -200,7 +206,7 @@ public:
                 // std::cerr << "Now rotation3Dmatrix is done! \nThen starting the projection! " << std::endl;
 
                 F2D.initZeros();
-                projector.get2DFourierTransform(F2D, A3D, IS_NOT_INV);
+                projector.get2DFourierTransform(F2D, A3D, IS_NOT_INV, cubic_alpha);
 
                 // this line is for testing whether the projection step is ok
                 // std::cerr << "Now the projection step is done! " << std::endl;

@@ -77,7 +77,7 @@ long int Projector::getSize()
 }
 
 // Fill data array with oversampled Fourier transform, and calculate its power spectrum
-void Projector::computeFourierTransformMap(MultidimArray<DOUBLE> &vol_in, MultidimArray<DOUBLE> &power_spectrum, int current_size, int nr_threads, bool do_gridding)
+void Projector::computeFourierTransformMap(MultidimArray<DOUBLE> &vol_in, MultidimArray<DOUBLE> &power_spectrum, int current_size, int nr_threads, bool do_gridding, DOUBLE cubic_alpha)
 {
 
 	MultidimArray<DOUBLE> Mpad;
@@ -117,7 +117,7 @@ void Projector::computeFourierTransformMap(MultidimArray<DOUBLE> &vol_in, Multid
 	// 10feb11: at least in 2D case, this seems to be the wrong thing to do!!!
 	// TODO: check what is best for subtomo!
 	if (do_gridding)// && data_dim != 3)
-		griddingCorrect(vol_in);
+		griddingCorrect(vol_in, cubic_alpha);
 
 	// Pad translated map with zeros
 	vol_in.setXmippOrigin();
@@ -175,7 +175,7 @@ void Projector::computeFourierTransformMap(MultidimArray<DOUBLE> &vol_in, Multid
 
 }
 
-void Projector::griddingCorrect(MultidimArray<DOUBLE> &vol_in)
+void Projector::griddingCorrect(MultidimArray<DOUBLE> &vol_in, DOUBLE cubic_alpha)
 {
 
 // #define DEBUG_GRID_TYPE
@@ -233,22 +233,28 @@ void Projector::griddingCorrect(MultidimArray<DOUBLE> &vol_in)
 				//           - a * sinc(pi * x) * (1 - 9/2 * pi^2 * x^2 * sinc((3/2 * pi * x)^2) ) / (pi^2 * x^2)
 				
 				// cubic_factor set -0.5 for test
-				DOUBLE cubic_factor = -0.5;
+				DOUBLE cubic_factor = cubic_alpha;
+
+#ifdef DEBUG_SPECIAL_CUBIC
+				// this region is special for cubic_factor = -0.5
+
 				DOUBLE sincd2 = sin(PI * rval * 0.5) / (PI * rval * 0.5);
 				DOUBLE sinc3d2 = sin(PI * rval * 1.5) / (PI * rval * 1.5);
 				DOUBLE ft_of_kernel = 0.25 * sincd2 * sincd2 * sinc + 3 * sinc * sinc * sinc * sinc - 2.25 * sinc * sinc3d2 * sinc3d2;
 
-#ifdef DEBUG_OTHER_CUBIC			//  this region of code might be wrong, so annotate first 	
-				DOUBLE sinc_square = sin(PI * PI * rval * rval) / (PI * PI * rval * rval);
-				DOUBLE sinc_1square2 = sin(PI * PI * rval * rval * 1/2 * 1/2) / (PI * PI * rval * rval * 1/2 * 1/2);
-				DOUBLE sinc_3square2 = sin(PI * PI * rval * rval * 3/2 * 3/2) / (PI * PI * rval * rval * 3/2 * 3/2);
-				DOUBLE ft_of_kernel = - 3 * (1 - 1/2 * PI * PI * rval * rval * sinc_3square2) * sinc / (PI * PI * rval * rval)
-									  - 5 * cubic_factor * (1 - 1/2 * PI * PI * rval * rval * sinc_1square2) * sinc / (PI * PI * rval *rval)
-									  + 3 * sinc_square / (PI * PI * rval * rval)
-									  + 3 * cubic_factor * sinc_square / (PI * PI * rval * rval)
-									  + 3 * cubic_factor * sinc_square * (1 - 2 * PI * PI * rval * rval * sinc_square) / (PI * PI * rval * rval)
-									  - cubic_factor * sinc * (1 - 9/2 * PI * PI * rval * rval * sinc_3square2) / (PI * PI * rval * rval);
 #endif
+
+			//  this region of code might be wrong, so annotate first 	
+				
+				DOUBLE sincd2 = sin(PI * rval * 0.5) / (PI * rval * 0.5);
+				DOUBLE sinc3d2 = sin(PI * rval * 1.5) / (PI * rval * 1.5);
+				DOUBLE ft_of_kernel = - 3 * (1 - 0.5 * PI * PI * rval * rval * sincd2 * sincd2) * sinc / (PI * PI * rval * rval)
+									  - 5 * cubic_factor * (1 - 0.5 * PI * PI * rval * rval * sincd2 * sincd2) * sinc / (PI * PI * rval *rval)
+									  + 3 * sinc * sinc / (PI * PI * rval * rval)
+									  + 3 * cubic_factor * sinc * sinc / (PI * PI * rval * rval)
+									  + 3 * cubic_factor * sinc * sinc * (1 - 2 * PI * PI * rval * rval * sinc * sinc) / (PI * PI * rval * rval)
+									  - cubic_factor * sinc * (1 - 4.5 * PI * PI * rval * rval * sinc3d2 * sinc3d2) / (PI * PI * rval * rval);
+
 
 				A3D_ELEM(vol_in, k, i, j) /= ft_of_kernel;
 			}
@@ -807,7 +813,7 @@ void Projector::rotate2D(MultidimArray<Complex > &f2d, Matrix2D<DOUBLE> &A, bool
 }
 
 
-void Projector::rotate3D(MultidimArray<Complex > &f3d, Matrix2D<DOUBLE> &A, bool inv)
+void Projector::rotate3D(MultidimArray<Complex > &f3d, Matrix2D<DOUBLE> &A, bool inv, DOUBLE cubic_alpha)
 {
 	DOUBLE fx, fy, fz, xp, yp, zp;
 	int x0, x1, y0, y1, z0, z1, y, z, y2, z2, r2;
@@ -825,8 +831,8 @@ void Projector::rotate3D(MultidimArray<Complex > &f3d, Matrix2D<DOUBLE> &A, bool
 	Complex fx00, fx01, fx02, fx03, fx10, fx11, fx12, fx13, fx20, fx21, fx22, fx23, fx30, fx31, fx32, fx33,
 			fxy0, fxy1, fxy2, fxy3;
 
-	// cubic_factor set -0.5 for test
-	DOUBLE cubic_factor = -0.5;
+	// cubic_factor set -0.5 for test (2018.4.20 and ago), then using the variable cubic_factor meaning cubic_alpha
+	DOUBLE cubic_factor = cubic_alpha;
 
     // f3d should already be in the right size (ori_size,orihalfdim)
     // AND the points outside max_r should already be zero...
