@@ -196,7 +196,7 @@ public:
     * the real-space maps by dividing them by the Fourier Transform of the interpolator
     * Note these corrections are made on the not-oversampled, i.e. originally sized real-space map
     */
-   void griddingCorrect(MultidimArray<DOUBLE> &vol_in, DOUBLE cubic_alpha);
+   void griddingCorrect(MultidimArray<DOUBLE> &vol_in, DOUBLE cubic_alpha = -0.5);
 
    /*
 	* Get a 2D Fourier Transform from the 2D or 3D data array
