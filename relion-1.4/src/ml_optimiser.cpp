@@ -1455,7 +1455,7 @@ void MlOptimiser::iterate()
 void MlOptimiser::expectation()
 {
 
-#define DEBUG_EXP
+//#define DEBUG_EXP
 #ifdef DEBUG_EXP
 	std::cerr << "Entering expectation" << std::endl;
 #endif
@@ -1784,7 +1784,7 @@ void MlOptimiser::expectationSomeParticles(long int my_first_ori_particle, long 
 	timer.tic(TIMING_ESP);
 #endif
 
-#define DEBUG_EXPSOME
+//#define DEBUG_EXPSOME
 #ifdef DEBUG_EXPSOME
 	std::cerr << "Entering expectationSomeParticles..." << std::endl;
 #endif
@@ -1863,7 +1863,7 @@ void MlOptimiser::doThreadExpectationSomeParticles(int thread_id)
 	size_t first_ipart = 0, last_ipart = 0;
 	while (exp_ipart_ThreadTaskDistributor->getTasks(first_ipart, last_ipart))
 	{
-#define DEBUG_EXPSOMETHR
+//#define DEBUG_EXPSOMETHR
 #ifdef DEBUG_EXPSOMETHR
 		pthread_mutex_lock(&global_mutex);
 		std::cerr << " thread_id= " << thread_id << " first_ipart= " << first_ipart << " last_ipart= " << last_ipart << std::endl;
@@ -1937,7 +1937,7 @@ void MlOptimiser::expectationOneParticle(long int my_ori_particle, int thread_id
     }
 
 // This debug is a good one to step through the separate steps of the expectation to see where trouble lies....
-#define DEBUG_ESP_MEM
+//#define DEBUG_ESP_MEM
 #ifdef DEBUG_ESP_MEM
 
 	std::cerr << "Entering MlOptimiser::expectationOneParticle" << std::endl;
