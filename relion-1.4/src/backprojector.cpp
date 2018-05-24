@@ -546,7 +546,7 @@ void BackProjector::backproject(const MultidimArray<Complex > &f2d,
 		} // endif x-loop
 	} // endif y-loop
 
-	std::cerr << " Leaving backprojection " << std::endl;
+	//std::cerr << " Leaving backprojection " << std::endl;
 
 }
 
@@ -1558,7 +1558,7 @@ void BackProjector::reconstruct(MultidimArray<DOUBLE> &vol_out,
 	}
 
 //#define DEBUG_ZSY
-#define DEBUG_ZSY_WEIGHT     // for the weight which is negative 
+//#define DEBUG_ZSY_WEIGHT     // for the weight which is negative 
 #ifdef DEBUG_ZSY
 	FOR_ALL_DIRECT_ELEMENTS_IN_ARRAY1D(sigma2)
 	{
