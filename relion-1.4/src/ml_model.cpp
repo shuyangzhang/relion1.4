@@ -729,8 +729,11 @@ void MlWsumModel::initialise(MlModel &_model, FileName fn_sym)
     sigma2_tilt = _model.sigma2_tilt;
     sigma2_psi = _model.sigma2_psi;
     padding_factor = _model.padding_factor;
-    interpolator = _model.interpolator;
-    r_min_nn = _model.r_min_nn;
+
+	//interpolator in wsum_model equal to mymodel except CUBIC 
+    interpolator = (_model.interpolator == CUBIC) ? TRILINEAR : _model.interpolator;
+    
+	r_min_nn = _model.r_min_nn;
 
     // Don't need forward projectors in MlWsumModel!
     PPref.clear();
